@@ -1,0 +1,81 @@
+{
+    "polidipsia": {
+        "tipo": "binaria",
+        "universo": [0, 1, 0.01],
+        "fuente": "Martins 2019: 82.6% casos; Schofield ML 2021: coeficiente LASSO positivo alto",
+        "terminos": {
+          "no": {"funcion": "trimf", "params": [0, 0, 0.4]},
+          "si": {"funcion": "trimf", "params": [0.6, 1, 1]}
+        }
+      },
+
+      "poliuria": {
+        "tipo": "binaria",
+        "universo": [0, 1, 0.01],
+        "fuente": "Martins 2019: 80% casos; Schofield ML 2021: coeficiente LASSO 0.64, mayor de todos los sintomas",
+        "terminos": {
+          "no": {"funcion": "trimf", "params": [0, 0, 0.4]},
+          "si": {"funcion": "trimf", "params": [0.6, 1, 1]}
+        }
+      },
+
+      "abdomen": {
+        "tipo": "binaria",
+        "universo": [0, 1, 0.01],
+        "fuente": "Martins 2019: 82.6% casos; Schofield ML 2021: coeficiente LASSO 0.75",
+        "terminos": {
+          "no": {"funcion": "trimf", "params": [0, 0, 0.4]},
+          "si": {"funcion": "trimf", "params": [0.6, 1, 1]}
+        }
+      },
+
+      "alopecia": {
+        "tipo": "binaria",
+        "universo": [0, 1, 0.01],
+        "fuente": "Martins 2019: 73% casos; Schofield ML 2021: coeficiente LASSO 0.93, mayor de todos los sintomas clinicos",
+        "terminos": {
+          "no": {"funcion": "trimf", "params": [0, 0, 0.4]},
+          "si": {"funcion": "trimf", "params": [0.6, 1, 1]}
+        }
+      },
+
+      "debilidad_muscular": {
+        "tipo": "binaria",
+        "universo": [0, 1, 0.01],
+        "fuente": "Martins 2019: 78.3% casos; MSD Veterinary Manual: signo comun canonico",
+        "terminos": {
+          "no": {"funcion": "trimf", "params": [0, 0, 0.4]},
+          "si": {"funcion": "trimf", "params": [0.6, 1, 1]}
+        }
+      },
+
+      "piel_fina": {
+        "tipo": "binaria",
+        "universo": [0, 1, 0.01],
+        "fuente": "Martins 2019: 79.1% casos; Schofield ML 2021: coeficiente LASSO 0.12; Boghian 2020: atrofia cutanea con elastosis",
+        "terminos": {
+          "no": {"funcion": "trimf", "params": [0, 0, 0.4]},
+          "si": {"funcion": "trimf", "params": [0.6, 1, 1]}
+        }
+      },
+
+      "polifagia": {
+        "tipo": "binaria",
+        "universo": [0, 1, 0.01],
+        "fuente": "Martins 2019: 86% casos (mas frecuente); Schofield ML 2021: coeficiente LASSO 0.06 (baja capacidad discriminatoria aislada)",
+        "terminos": {
+          "no": {"funcion": "trimf", "params": [0, 0, 0.4]},
+          "si": {"funcion": "trimf", "params": [0.6, 1, 1]}
+        }
+      },
+
+      "jadeo": {
+        "tipo": "binaria",
+        "universo": [0, 1, 0.01],
+        "fuente": "Martins 2019: 74.8% casos; MSD Veterinary Manual: signo exclusivo de perros no gatos",
+        "terminos": {
+          "no": {"funcion": "trimf", "params": [0, 0, 0.4]},
+          "si": {"funcion": "trimf", "params": [0.6, 1, 1]}
+        }
+      }
+}

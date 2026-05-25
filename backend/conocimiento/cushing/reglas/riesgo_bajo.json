@@ -1,0 +1,52 @@
+[
+    {
+      "label": "Sobrepeso sin signos clinicos ni analiticos",
+      "antecedentes": [
+        {"variable": "peso_relativo", "termino": "alto"},
+        {"variable": "abdomen",       "termino": "no"},
+        {"variable": "polidipsia",    "termino": "no"},
+        {"variable": "alp",           "termino": "normal"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "bajo"},
+      "peso": 1.0,
+      "fuente": "Schofield 2022: OR=1.44 para peso superior a media raza-sexo; efecto modesto, justifica bajo no medio"
+    },
+
+    {
+      "label": "Polifagia sin polidipsia",
+      "antecedentes": [
+        {"variable": "polifagia",  "termino": "si"},
+        {"variable": "polidipsia", "termino": "no"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "bajo"},
+      "peso": 1.0,
+      "fuente": "Schofield ML 2021: polifagia coef LASSO 0.06, menor de todos los sintomas; Martins 2019: 86% frecuencia pero baja especificidad aislada"
+    },
+
+    {
+      "label": "Laboratorio limpio sin PUPD",
+      "antecedentes": [
+        {"variable": "alp",        "termino": "normal"},
+        {"variable": "usg",        "termino": "concentrada"},
+        {"variable": "polidipsia", "termino": "no"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "bajo"},
+      "peso": 1.0,
+      "fuente": "Inferencia negativa: ausencia de los tres marcadores mas sensibles reduce sustancialmente la probabilidad"
+    },
+
+    {
+      "label": "Perfil demografico favorable",
+      "antecedentes": [
+        {"variable": "edad", "termino": "joven"},
+        {"variable": "raza", "termino": "protectora"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "bajo"},
+      "peso": 1.0,
+      "fuente": "Schofield 2022: Golden retriever OR=0.24, Labrador OR=0.30; edad joven fuera del rango tipico de diagnostico"
+    }
+]

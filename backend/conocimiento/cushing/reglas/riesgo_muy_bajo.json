@@ -1,0 +1,45 @@
+[
+    {
+      "label": "Proteccion por raza joven con todos los negativos incluyendo ALT",
+      "antecedentes": [
+        {"variable": "edad",       "termino": "joven"},
+        {"variable": "raza",       "termino": "protectora"},
+        {"variable": "alp",        "termino": "normal"},
+        {"variable": "alt",        "termino": "normal"},
+        {"variable": "polidipsia", "termino": "no"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "muy_bajo"},
+      "peso": 2.0,
+      "fuente": "Schofield ML 2021: ALKP not elevated LASSO -1.04, ALT not elevated LASSO -0.57; combinacion de los dos predictores negativos mas fuertes"
+    },
+
+    {
+      "label": "Ausencia generalizada de hallazgos clinicos y analiticos",
+      "antecedentes": [
+        {"variable": "alp",        "termino": "normal"},
+        {"variable": "usg",        "termino": "concentrada"},
+        {"variable": "polidipsia", "termino": "no"},
+        {"variable": "abdomen",    "termino": "no"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "muy_bajo"},
+      "peso": 2.0,
+      "fuente": "Inferencia negativa convergente: ausencia de PUPD, ALP normal, USG concentrada y sin abdomen cubren los cuatro ejes diagnosticos principales"
+    },
+
+    {
+      "label": "Perfil demografico protector sin hallazgos",
+      "antecedentes": [
+        {"variable": "edad",       "termino": "joven"},
+        {"variable": "raza",       "termino": "protectora"},
+        {"variable": "alp",        "termino": "normal"},
+        {"variable": "polidipsia", "termino": "no"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "muy_bajo"},
+      "peso": 2.0,
+      "fuente": "Schofield 2022: OR protectoras 0.24-0.44; edad joven fuera distribucion epidemiologica; ALP normal descarta hepatopatia esteroidica"
+    }
+]
+

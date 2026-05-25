@@ -1,0 +1,49 @@
+{
+    "alp": {
+        "tipo": "numerica",
+        "universo": [0, 3000, 10],
+        "unidad": "U/L",
+        "fuente": "Boghian 2020: normal 10.6-100.7 U/L, media Cushing 378 U/L; MSD: isoenzima C-ALP inducida por cortisol exclusiva de perros",
+        "terminos": {
+          "normal":      {"funcion": "zmf",   "params": [0, 150]},
+          "elevada":     {"funcion": "trimf", "params": [100, 400, 800]},
+          "muy_elevada": {"funcion": "smf",   "params": [700, 1500]}
+        }
+      },
+
+      "usg": {
+        "tipo": "numerica",
+        "universo": [1.000, 1.060, 0.001],
+        "unidad": "densidad urinaria",
+        "fuente": "MSD Veterinary Manual: diluida <= 1.020 por interferencia cortisol-ADH; Marin 2010: USG < 1.013 en 100% casos",
+        "terminos": {
+          "diluida":     {"funcion": "zmf",   "params": [1.000, 1.015]},
+          "intermedia":  {"funcion": "trimf", "params": [1.010, 1.020, 1.030]},
+          "concentrada": {"funcion": "smf",   "params": [1.025, 1.045]}
+        }
+      },
+
+      "alt": {
+        "tipo": "numerica",
+        "universo": [0, 1500, 5],
+        "unidad": "U/L",
+        "fuente": "Boghian 2020: normal 8.2-57.3 U/L, media Cushing 93.26 U/L; Schofield ML 2021: coeficiente LASSO -0.57 (segundo predictor mas fuerte)",
+        "terminos": {
+          "normal":      {"funcion": "zmf",   "params": [0, 80]},
+          "elevada":     {"funcion": "trimf", "params": [60, 150, 350]},
+          "muy_elevada": {"funcion": "smf",   "params": [300, 700]}
+        }
+      },
+
+      "colesterol": {
+        "tipo": "numerica",
+        "universo": [50, 600, 5],
+        "unidad": "mg/dL",
+        "fuente": "Boghian 2020: normal 115.6-253.7 mg/dL, media Cushing 332 mg/dL; Martins 2019: 66% casos hipercol.",
+        "terminos": {
+          "normal":      {"funcion": "zmf",   "params": [50, 220]},
+          "elevado":     {"funcion": "trimf", "params": [180, 300, 450]},
+          "muy_elevado": {"funcion": "smf",   "params": [400, 550]}
+        }
+      }
+}

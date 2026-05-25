@@ -1,0 +1,13 @@
+{
+    "riesgo": {
+        "universo": [0, 1, 0.01],
+        "unidad": "grado de sospecha de Cushing",
+        "terminos": {
+          "muy_bajo": {"funcion": "zmf",   "params": [0, 0.06]},
+          "bajo":     {"funcion": "trimf", "params": [0.02, 0.12, 0.24]},
+          "medio":    {"funcion": "trimf", "params": [0.28, 0.50, 0.72]},
+          "alto":     {"funcion": "trimf", "params": [0.76, 0.87, 0.94]},
+          "muy_alto": {"funcion": "smf",   "params": [0.96, 1.0]}
+        }
+      }
+}

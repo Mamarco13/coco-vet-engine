@@ -1,0 +1,73 @@
+{
+    "edad": {
+        "tipo": "numerica",
+        "universo": [0, 20, 0.1],
+        "unidad": "años",
+        "fuente": "Schofield 2022: mediana diagnóstico 10.9 años IQR 9.0-12.7; MSD Veterinary Manual: rango típico 7-12 años",
+        "terminos": {
+          "joven":  {"funcion": "zmf",   "params": [0, 4]},
+          "adulto": {"funcion": "trimf", "params": [3, 6.5, 10]},
+          "mayor":  {"funcion": "smf",   "params": [8, 12]}
+        }
+      },
+
+      "peso_relativo": {
+        "tipo": "numerica",
+        "universo": [50, 150, 1],
+        "unidad": "% respecto a media raza-sexo",
+        "fuente": "Schofield 2022: OR=1.44 para peso superior a media raza-sexo",
+        "terminos": {
+          "bajo":   {"funcion": "zmf",   "params": [50, 85]},
+          "normal": {"funcion": "trimf", "params": [80, 100, 120]},
+          "alto":   {"funcion": "smf",   "params": [115, 140]}
+        }
+      },
+
+      "raza": {
+        "tipo": "categorica",
+        "fuente": "Schofield 2022: OR multivariable por raza via regresion logistica; Hoffman 2018: VMDB norteamericana",
+        "terminos": {
+          "protectora": [
+            "golden_retriever",
+            "labrador_retriever",
+            "border_collie",
+            "cocker_spaniel"
+          ],
+          "neutra": [
+            "mestizo",
+            "beagle",
+            "rottweiler",
+            "boxer",
+            "west_highland_white_terrier",
+            "cavalier_king_charles_spaniel",
+            "cockapoo",
+            "shih_tzu",
+            "pomeranian",
+            "english_springer_spaniel",
+            "pug",
+            "chihuahua",
+            "german_shepherd_dog",
+            "other_purebred"
+          ],
+          "predispuesta_moderada": [
+            "staffordshire_bull_terrier",
+            "jack_russell_terrier",
+            "lhasa_apso",
+            "yorkshire_terrier",
+            "poodle",
+            "dachshund"
+          ],
+          "predispuesta_alta": [
+            "bichon_frise",
+            "border_terrier",
+            "miniature_schnauzer"
+          ]
+        },
+        "pesos_numericos": {
+          "protectora":            0.1,
+          "neutra":                0.5,
+          "predispuesta_moderada": 0.7,
+          "predispuesta_alta":     1.0
+        }
+      }
+}

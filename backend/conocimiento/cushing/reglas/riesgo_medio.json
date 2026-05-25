@@ -1,0 +1,84 @@
+[
+    {
+      "label": "Combinacion dermatologica-abdominal sin laboratorio",
+      "antecedentes": [
+        {"variable": "abdomen",    "termino": "si"},
+        {"variable": "alopecia",   "termino": "si"},
+        {"variable": "polidipsia", "termino": "no"},
+        {"variable": "alp",        "termino": "normal"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "medio"},
+      "peso": 1.0,
+      "fuente": "Martins 2019: alopecia 73%, abdomen 82.6%; guarda negativa para evitar competencia con reglas de nivel superior"
+    },
+
+    {
+      "label": "Signos dermicos combinados: piel fina + alopecia",
+      "antecedentes": [
+        {"variable": "piel_fina",  "termino": "si"},
+        {"variable": "alopecia",   "termino": "si"},
+        {"variable": "alp",        "termino": "normal"},
+        {"variable": "polidipsia", "termino": "no"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "medio"},
+      "peso": 1.0,
+      "fuente": "Boghian 2020: atrofia cutanea con elastosis e hiperpigmentacion; Schofield ML 2021: piel fina LASSO 0.12"
+    },
+
+    {
+      "label": "Perfil lipidico-hepatico compatible: colesterol + ALP",
+      "antecedentes": [
+        {"variable": "colesterol", "termino": "elevado"},
+        {"variable": "alp",        "termino": "elevada"},
+        {"variable": "polidipsia", "termino": "no"},
+        {"variable": "abdomen",    "termino": "no"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "medio"},
+      "peso": 1.0,
+      "fuente": "Martins 2019: hipercol. 66%; MSD: hipercol. por estimulacion cortisol sobre lipólisis; guarda negativa anti-solapamiento"
+    },
+
+    {
+      "label": "Elevacion aislada de ALP sin sintomas",
+      "antecedentes": [
+        {"variable": "alp",        "termino": "elevada"},
+        {"variable": "abdomen",    "termino": "no"},
+        {"variable": "polidipsia", "termino": "no"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "medio"},
+      "peso": 1.0,
+      "fuente": "Boghian 2020 FUENTE PRIMARIA EXPLICITA: ALP elevada sin transaminasas significativas en paciente con patologia cutanea obliga a descartar Cushing"
+    },
+
+    {
+      "label": "Pico etario de Cushing con ALP elevada aislada",
+      "antecedentes": [
+        {"variable": "edad",       "termino": "mayor"},
+        {"variable": "alp",        "termino": "elevada"},
+        {"variable": "polidipsia", "termino": "no"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "medio"},
+      "peso": 1.0,
+      "fuente": "Schofield 2022: mediana diagnostico 10.9 años, odds aumentan rapidamente hasta 7 años y continuan gradualmente; Martins 2019: media 10.3 años"
+    },
+
+    {
+      "label": "Perfil demografico de riesgo sin clinica",
+      "antecedentes": [
+        {"variable": "raza",       "termino": "predispuesta_alta"},
+        {"variable": "edad",       "termino": "mayor"},
+        {"variable": "polidipsia", "termino": "no"},
+        {"variable": "abdomen",    "termino": "no"},
+        {"variable": "alp",        "termino": "normal"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "medio"},
+      "peso": 1.0,
+      "fuente": "Schofield 2022: Bichon frise OR=6.17, Border terrier OR=5.40, Miniature schnauzer OR=3.05; perfil demografico justifica vigilancia activa"
+    }
+]

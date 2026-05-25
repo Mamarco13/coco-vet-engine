@@ -1,0 +1,56 @@
+[
+    {
+      "label": "Cuadro clinico completo multiorganico",
+      "antecedentes": [
+        {"variable": "polidipsia", "termino": "si"},
+        {"variable": "abdomen",    "termino": "si"},
+        {"variable": "alp",        "termino": "elevada"},
+        {"variable": "alopecia",   "termino": "si"},
+        {"variable": "polifagia",  "termino": "si"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "muy_alto"},
+      "peso": 2.0,
+      "fuente": "Martins 2019: polidipsia 82.6%, abdomen 82.6%, alopecia 73%, polifagia 86%, ALP 81.7%; Marin 2010: convergencia multiorganica"
+    },
+
+    {
+      "label": "PUPD + orina diluida + ALP elevada",
+      "antecedentes": [
+        {"variable": "polidipsia", "termino": "si"},
+        {"variable": "usg",        "termino": "diluida"},
+        {"variable": "alp",        "termino": "elevada"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "muy_alto"},
+      "peso": 2.0,
+      "fuente": "Marin 2010: USG < 1.013 en 100% casos; Boghian 2020: ALP media 378 U/L; MSD: interferencia cortisol-ADH produce hipostenuria"
+    },
+
+    {
+      "label": "Hepatopatia esteroidica con PUPD",
+      "antecedentes": [
+        {"variable": "alt",        "termino": "elevada"},
+        {"variable": "alp",        "termino": "elevada"},
+        {"variable": "polidipsia", "termino": "si"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "muy_alto"},
+      "peso": 2.0,
+      "fuente": "Schofield ML 2021: ALT coef LASSO -0.57; Boghian 2020: ALT media 93.26 U/L; Martins 2019: ALT elevada 62.6% casos"
+    },
+
+    {
+      "label": "Poliuria + hepatopatia esteroidica + abdomen",
+      "antecedentes": [
+        {"variable": "poliuria", "termino": "si"},
+        {"variable": "alp",      "termino": "elevada"},
+        {"variable": "abdomen",  "termino": "si"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "muy_alto"},
+      "peso": 2.0,
+      "fuente": "Schofield ML 2021: poliuria coef LASSO 0.64 mayor de todos los sintomas; Martins 2019: poliuria 80% casos"
+    }
+]
+ 

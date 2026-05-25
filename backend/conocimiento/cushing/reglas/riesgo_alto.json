@@ -1,0 +1,128 @@
+[
+    {
+      "label": "Triada neuromuscular-abdominal con PUPD",
+      "antecedentes": [
+        {"variable": "debilidad_muscular", "termino": "si"},
+        {"variable": "abdomen",            "termino": "si"},
+        {"variable": "polidipsia",         "termino": "si"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "alto"},
+      "peso": 1.0,
+      "fuente": "Martins 2019: debilidad muscular 78.3%, abdomen 82.6%; MSD: signo comun canonico"
+    },
+
+    {
+      "label": "Debilidad muscular + signos dermico-abdominales",
+      "antecedentes": [
+        {"variable": "debilidad_muscular", "termino": "si"},
+        {"variable": "abdomen",            "termino": "si"},
+        {"variable": "alopecia",           "termino": "si"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "alto"},
+      "peso": 1.0,
+      "fuente": "Martins 2019: debilidad 78.3%, alopecia 73%; Schofield ML 2021: alopecia coef LASSO 0.93"
+    },
+
+    {
+      "label": "PUPD confirmada: poliuria y polidipsia simultaneas",
+      "antecedentes": [
+        {"variable": "poliuria",   "termino": "si"},
+        {"variable": "polidipsia", "termino": "si"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "alto"},
+      "peso": 1.0,
+      "fuente": "Martins 2019: poliuria 80%, polidipsia 82.6%; Schofield ML 2021: ambas variables retenidas en LASSO de forma independiente"
+    },
+
+    {
+      "label": "Hepatopatia esteroidica: ALT + ALP elevadas",
+      "antecedentes": [
+        {"variable": "alt", "termino": "elevada"},
+        {"variable": "alp", "termino": "elevada"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "alto"},
+      "peso": 1.0,
+      "fuente": "Boghian 2020: ALP 378 U/L y ALT 93.26 U/L medias en Cushing; MSD: vacuolacion hepatica por glucogeno eleva ambas"
+    },
+
+    {
+      "label": "Triada clinica principal",
+      "antecedentes": [
+        {"variable": "polidipsia", "termino": "si"},
+        {"variable": "abdomen",    "termino": "si"},
+        {"variable": "alp",        "termino": "elevada"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "alto"},
+      "peso": 1.0,
+      "fuente": "Martins 2019: los tres hallazgos mas frecuentes simultaneamente; Schofield ML 2021: potbelly LASSO 0.75"
+    },
+
+    {
+      "label": "PUPD con orina diluida",
+      "antecedentes": [
+        {"variable": "polidipsia", "termino": "si"},
+        {"variable": "usg",        "termino": "diluida"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "alto"},
+      "peso": 1.0,
+      "fuente": "MSD Veterinary Manual: cortisol interfiere union ADH produciendo hipostenuria; Marin 2010: 100% casos USG < 1.013"
+    },
+
+    {
+      "label": "Signos dermico-abdominales con ALP",
+      "antecedentes": [
+        {"variable": "abdomen",  "termino": "si"},
+        {"variable": "alopecia", "termino": "si"},
+        {"variable": "alp",      "termino": "elevada"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "alto"},
+      "peso": 1.0,
+      "fuente": "Boghian 2020: ALP elevada con signos dermatologicos obliga a descartar Cushing; Martins 2019: alopecia 73%, abdomen 82.6%"
+    },
+
+    {
+      "label": "Sindrome dermatologico esteroidico con hepatopatia",
+      "antecedentes": [
+        {"variable": "piel_fina", "termino": "si"},
+        {"variable": "alopecia",  "termino": "si"},
+        {"variable": "alp",       "termino": "elevada"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "alto"},
+      "peso": 1.0,
+      "fuente": "Martins 2019: piel fina 79.1%, alopecia 73%; Schofield ML 2021: piel fina LASSO 0.12, alopecia 0.93"
+    },
+
+    {
+      "label": "Perfil metabolico completo: hiperlipidemia + ALP + PUPD",
+      "antecedentes": [
+        {"variable": "colesterol", "termino": "elevado"},
+        {"variable": "alp",        "termino": "elevada"},
+        {"variable": "polidipsia", "termino": "si"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "alto"},
+      "peso": 1.0,
+      "fuente": "Martins 2019: hipercol. 66%, hipertrigl. 54.7%; Boghian 2020: colesterol medio 332 mg/dL; MSD: estimulacion cortisol sobre lipólisis"
+    },
+
+    {
+      "label": "Jadeo + ptosis abdominal + ALP: fenotipo glucocorticoideo",
+      "antecedentes": [
+        {"variable": "jadeo",   "termino": "si"},
+        {"variable": "abdomen", "termino": "si"},
+        {"variable": "alp",     "termino": "elevada"}
+      ],
+      "conectiva": "AND",
+      "consecuente": {"variable": "riesgo", "termino": "alto"},
+      "peso": 1.0,
+      "fuente": "Martins 2019: jadeo 74.8%; MSD: signo exclusivo de perros no presente en gatos"
+    }
+]
