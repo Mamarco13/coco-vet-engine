@@ -1,0 +1,9 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ejecutar-tests
+        name: Ejecutar Pytest antes del Push
+        entry: bash -c "cd backend && python -m pytest tests/ -v"
+        language: system
+        pass_filenames: false
+        always_run: true

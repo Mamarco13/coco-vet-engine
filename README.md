@@ -1,105 +1,155 @@
-# Motor4 — Sistema difuso (fuzzy) para predicción de Cushing canino
+# C.O.C.O - Motor difuso para prediccion de Cushing canino
 
-Este directorio (`Backend/motor4/`) contiene **un motor de inferencia difusa completo** + una **instanciación concreta** para estimar el **riesgo/sospecha** de Síndrome de Cushing en perros.
+Este repositorio contiene un **motor de inferencia difusa** para estimar el **riesgo/sospecha** de Sindrome de Cushing en perros, junto con su base de conocimiento en JSON. El proyecto esta dividido en:
 
-La implementación se apoya en:
+- **backend/**: motor difuso, base de conocimiento, y ejemplo de ejecucion.
+- **frontend/**: estructura base sin implementacion (pendiente).
 
-- Un **framework fuzzy propio** (paquete `logicaDifusa/`) construido sobre `scikit-fuzzy`.
-- Una **base de conocimiento modular en JSON** (`conocimiento/cushing/`) con:
-  - definiciones de variables lingüísticas y funciones de pertenencia,
-  - reglas difusas (con pesos y conectivas AND/OR),
-  - metadatos.
-- Un **predictor fachada** (`sistema/PrediccionCushing`) que:
-  - carga automáticamente la base JSON,
-  - construye variables y reglas,
-  - ejecuta inferencia Mamdani,
-  - devuelve salida crisp y trazabilidad (reglas activas).
-
-> Nota de alcance: este motor **no diagnostica**; produce una **estimación de riesgo** (0–1) basada en reglas y funciones de pertenencia definidas en la base de conocimiento.
+> Nota de alcance: este motor **no diagnostica**; produce una **estimacion de riesgo** (0-1) basada en reglas y funciones de pertenencia definidas en la base de conocimiento.
 
 ---
 
-## 1) Vista rápida
+## 1) Como levantar el proyecto (backend)
 
-### Ejecución del ejemplo incluido
+### 1.1 Requisitos
 
-El ejemplo completo está en `main.py` y construye:
+- Python 3.x con `pip` disponible.
+- No hay servidor web en este backend; el ejemplo es un script ejecutable.
 
-- módulo demográfico (`ModuloDemografico`),
-- módulo clínico (`ModuloClinico`),
-- módulo de laboratorio (`ModuloLaboratorio`),
-- predictor fuzzy (`PrediccionCushing`).
+### 1.2 Instalacion de dependencias
 
-Ejecuta:
+Desde la raiz del repositorio:
 
 ```bash
-python Backend/motor4/main.py
+python -m venv .venv
+
+# Windows (PowerShell)
+.\.venv\Scripts\Activate.ps1
+pip install -r backend/requirements.txt
+
+# Linux/WSL
+source .venv/bin/activate
+pip install -r backend/requirements.txt
 ```
+
+### 1.3 Ejecucion del ejemplo
+
+El ejemplo completo esta en `backend/main.py` y construye:
+
+- modulo demografico (`ModuloDemografico`),
+- modulo clinico (`ModuloClinico`),
+- modulo de laboratorio (`ModuloLaboratorio`),
+- predictor difuso (`PrediccionCushing`).
+
+Ejecuta desde la raiz:
+
+```bash
+python backend/main.py
+```
+
+Actualmente `backend/main.py` usa `argparse`, por lo que espera argumentos obligatorios por CLI. Ejemplo completo:
+
+```bash
+python backend/main.py \
+  --edad 11 \
+  --raza bichon_frise \
+  --peso 125 \
+  --alp 780 \
+  --alt 220 \
+  --usg 1.012 \
+  --colesterol 410 \
+  --polidipsia \
+  --abdomen-inflamado \
+  --alopecia \
+  --polifagia \
+  --poliuria \
+  --debilidad \
+  --jadeo
+```
+
+Notas:
+
+- Los flags clinicos son booleanos (si se incluyen, se consideran `True`).
+- Si no se incluye un flag clinico, se considera `False`.
 
 Salida esperada (resumen):
 
 - `Riesgo estimado` (valor crisp en [0, 1])
-- `Confianza fuzzy` (máxima activación de las reglas activas)
+- `Nivel de riesgo` (etiqueta linguistica)
+- `Confianza fuzzy` (metrica compuesta del motor)
 - listado de reglas activadas + pesos
 - informe de explicabilidad
 
-### Dependencias
+### 1.4 Ejecutar tests
 
-Las dependencias están en `Backend/requirements.txt` (incluye `numpy`, `scipy`, `matplotlib`, `scikit-fuzzy`, etc.).
-
-Instalación típica:
+Los tests importan modulos como `sistema`, `logicaDifusa` y `modulos`, por lo que se recomienda ejecutarlos desde `backend/`:
 
 ```bash
-python -m venv .venv
-# Windows:
-.venv\\Scripts\\pip install -r Backend/requirements.txt
-# Linux/WSL:
-.venv/bin/pip install -r Backend/requirements.txt
+cd backend
+python -m pytest
 ```
+
+Si prefieres ejecutarlos desde la raiz, deberas exponer `backend/` en el `PYTHONPATH`.
 
 ---
 
-## 2) Estructura del directorio
+## 2) Estructura actual del repositorio
 
 ```
-Backend/motor4/
-  main.py                      # Ejemplo de uso end-to-end
-
-  modulos/                     # Entrada estructurada por dominios
-    moduloDemografico.py
-    moduloClinico.py
-    moduloLaboratorio.py
-
-  sistema/                     # Fachada/predictor (carga base, crea variables y reglas, ejecuta inferencia)
-    prediccion.py              # Clase abstracta
-    prediccionCushing.py       # Implementación concreta para Cushing
-
-  logicaDifusa/                # Framework fuzzy (variables, reglas, sistema, defuzz)
-    variables.py               # FuzzyVariable
-    funcionesPertenencia.py    # MFs paramétricas (trimf, zmf, smf, ...)
-    reglas.py                  # Rule + operadores AND/OR + peso
-    sistema.py                 # FuzzySystem (Mamdani + centroid)
-    defuzzification.py         # Estrategias de defuzzificación
-
-  conocimiento/                # Base de conocimiento (JSON)
+.
+README.md
+backend/
+  main.py
+  requirements.txt
+  conocimiento/
     cushing/
       metadata.json
+      reglas/
+        riesgo_muy_alto.json
+        riesgo_alto.json
+        riesgo_medio.json
+        riesgo_bajo.json
+        riesgo_muy_bajo.json
       variables/
         demograficas.json
         clinicas.json
         laboratorio.json
         consecuente.json
-      reglas/
-        riesgo_muy_bajo.json
-        riesgo_bajo.json
-        riesgo_medio.json
-        riesgo_alto.json
-        riesgo_muy_alto.json
+  logicaDifusa/
+    __init__.py
+    defuzzification.py
+    funcionesPertenencia.py
+    reglas.py
+    sistema.py
+    variables.py
+  modulos/
+    __init__.py
+    moduloClinico.py
+    moduloDemografico.py
+    moduloLaboratorio.py
+  sistema/
+    __init__.py
+    prediccion.py
+    prediccionCushing.py
+  tests/
+    test_prediccion_cushing.py
+    test_reglas.py
+    test_sistema.py
+    test_variables.py
+frontend/
+  public/
+  src/
 ```
 
 ---
 
-## 3) Arquitectura (componentes y responsabilidades)
+## 3) Frontend (pendiente)
+
+Este repositorio incluye la carpeta `frontend/`, pero **no hay implementacion aun**. Este apartado queda por completar cuando exista una interfaz funcional.
+
+---
+
+## 4) Arquitectura del backend (componentes y responsabilidades)
 
 ```mermaid
 graph TD
@@ -110,52 +160,52 @@ graph TD
   KB[Base de conocimiento JSON] --> P
 
   P --> FS[FuzzySystem]
-  FS --> OUT[Resultado: crisp + confidence + reglas activas]
+  FS --> OUT[Resultado: crisp + etiqueta + confianza + reglas activas]
 ```
 
 ### Capas principales
 
-1. **Entrada (módulos)**
+1. **Entrada (modulos)**
    - Encapsulan datos de paciente por dominios.
-   - Son clases simples con getters/setters.
+   - Clases simples con getters/setters.
 
-2. **Fachada de predicción (`PrediccionCushing`)**
-   - Carga la base JSON.
+2. **Fachada de prediccion (`PrediccionCushing`)**
+   - Carga la base JSON desde `backend/conocimiento/cushing/`.
    - Construye variables fuzzy (antecedentes y consecuentes).
-   - Construye reglas fuzzy (antecedentes → consecuente).
-   - Mapea módulos → diccionario `inputs` para el motor.
-   - Lanza inferencia y devuelve resultados.
+  - Construye reglas fuzzy (antecedentes -> consecuente).
+   - Mapea modulos → diccionario `inputs` para el motor.
+   - Ejecuta inferencia y devuelve resultados.
 
 3. **Motor difuso (`logicaDifusa/FuzzySystem`)**
-   - Evalúa reglas (activación + peso).
-   - Agrega salidas (Mamdani: MIN implicación, MAX agregación).
-   - Defuzzifica (centroide) y calcula una “confianza”.
+   - Evalua reglas (activacion + peso).
+   - Agrega salidas (Mamdani: MIN implicacion, MAX agregacion).
+   - Defuzzifica (centroide) y calcula una confianza compuesta.
 
 4. **Base de conocimiento JSON**
-   - Define variables, universos, términos (etiquetas lingüísticas) y reglas.
-   - Permite mantener la lógica clínica “fuera del código”.
+   - Define variables, universos, terminos y reglas.
+   - Mantiene la logica clinica fuera del codigo.
 
 ---
 
-## 4) Contratos de entrada (inputs)
+## 5) Contratos de entrada (inputs)
 
-El predictor construye un diccionario `inputs` con **nombres de variables exactamente iguales** a los declarados en `conocimiento/cushing/variables/*.json`.
+El predictor construye un diccionario `inputs` con **nombres de variables exactamente iguales** a los declarados en `backend/conocimiento/cushing/variables/*.json`.
 
-### 4.1 Módulo demográfico — `modulos/moduloDemografico.py`
+### 5.1 Modulo demografico — `backend/modulos/moduloDemografico.py`
 
 Campos:
 
-- `edad` (años, numérica)
-- `peso_rel` (porcentaje respecto a la media raza-sexo, numérica)
-- `raza` (categórica, *string*)
+- `edad` (anios, numerica)
+- `peso_rel` (porcentaje respecto a la media raza-sexo, numerica)
+- `raza` (categorica, string)
 
 En `PrediccionCushing.predecir()` se transforman a:
 
-- `edad` → número
-- `peso_relativo` → número (nota: el atributo en el módulo se llama `peso_rel`)
-- `raza` → string (normalizada internamente por la MF categórica)
+- `edad` -> numero
+- `peso_relativo` -> numero (nota: el atributo en el modulo se llama `peso_rel`)
+- `raza` -> string (normalizada internamente por la MF categorica)
 
-### 4.2 Módulo clínico — `modulos/moduloClinico.py`
+### 5.2 Modulo clinico — `backend/modulos/moduloClinico.py`
 
 Campos (booleanos):
 
@@ -166,14 +216,12 @@ Campos (booleanos):
 - `piel_fina`
 - `jadeo`
 
-Transformación a fuzzy:
+Transformacion a fuzzy:
 
-- `True` → `1.0`
-- `False` (o `None`) → `0.0`
+- `True` -> `1.0`
+- `False` o `None` -> `0.0`
 
-> Implicación práctica: si dejas un síntoma como `None`, el sistema lo tratará como ausencia del signo (0.0).
-
-### 4.3 Módulo de laboratorio — `modulos/moduloLaboratorio.py`
+### 5.3 Modulo de laboratorio — `backend/modulos/moduloLaboratorio.py`
 
 Campos:
 
@@ -182,60 +230,72 @@ Campos:
 - `usg` (densidad urinaria)
 - `colesterol` (mg/dL)
 
-Se pasan como valores numéricos directamente.
+Se pasan como valores numericos directamente.
+
+### 5.4 Clipping de entradas fuera de rango
+
+Antes de inferir, el predictor recorta valores numericos fuera del universo declarado y emite un `warnings.warn`:
+
+- si `valor < u_min` -> se recorta a `u_min`
+- si `valor > u_max` -> se recorta a `u_max`
+
+Las variables categoricas (string) se omiten en esta validacion.
 
 ---
 
-## 5) Salida del sistema (outputs)
+## 6) Salida del sistema (outputs)
 
 `PrediccionCushing.predecir()` devuelve el resultado de `FuzzySystem.infer(...)` con esta estructura:
 
-- `crisp` (`float`): valor defuzzificado (centroide) del output `riesgo`.
-- `confidence` (`float`): máxima activación (ya ponderada por peso) entre las reglas activas.
-- `rules` (`list[RuleResult]`): reglas activas con:
-  - `activation`: activación final,
-  - `consequent`: tupla `(variable_salida, termino_salida)`;
-  - `rule`: referencia a la regla evaluada (incluye `weight`).
-- `aggregated` (`np.ndarray`): membership agregada del output (misma longitud que el universo de `riesgo`).
+- `crisp` (`float`): valor defuzzificado del output `riesgo`.
+- `label` (`str`): etiqueta interna del termino ganador (ej. `muy_alto`).
+- `etiqueta` (`str`): etiqueta humanizada (ej. `Muy alto`).
+- `confidence` (`float`): confianza compuesta (ver seccion 8).
+- `fuerza` (`float`): fuerza agregada de activaciones.
+- `consenso` (`float`): grado de acuerdo entre reglas activas.
+- `rules` (`list[RuleResult]`): reglas activas con `activation`, `consequent`, `rule.weight`.
+- `aggregated` (`np.ndarray`): membership agregada del output.
 
-Interpretación recomendada:
+Interpretacion recomendada:
 
 - `crisp` aproxima un **grado continuo de sospecha** en [0, 1].
-- `confidence` no es una probabilidad clínica; es una **medida interna** de cuán fuerte activó la mejor regla.
+- `confidence` **no es una probabilidad clinica**; es una metrica interna del motor.
 
 ---
 
-## 6) Base de conocimiento JSON (formato y convenciones)
+## 7) Base de conocimiento JSON (formato y convenciones)
 
 La base se carga desde:
 
-- `conocimiento/cushing/metadata.json`
-- `conocimiento/cushing/variables/*.json`
-- `conocimiento/cushing/reglas/*.json`
+- `backend/conocimiento/cushing/metadata.json`
+- `backend/conocimiento/cushing/variables/*.json`
+- `backend/conocimiento/cushing/reglas/*.json`
 
-### 6.1 Metadata
+### 7.1 Metadata
 
-Archivo: `conocimiento/cushing/metadata.json`
+Archivo: `backend/conocimiento/cushing/metadata.json`
 
-Estructura:
+Estructura actual:
 
 ```json
 {
   "metadata": {
     "version": "1.0",
     "fecha": "16/05/2026",
-    "autor": "...",
-    "descripcion": "..."
+    "autor": "Manuel Martínez Cobos",
+    "descripcion": "Base de conocimiento difusa para predicción de Cushing canino"
   }
 }
 ```
 
-### 6.2 Variables
+El cargador tambien acepta el caso en que los campos esten al nivel raiz (sin el nodo `metadata`). Los campos obligatorios que valida el motor son: `autor`, `version`, `descripcion`.
+
+### 7.2 Variables
 
 Los JSON de variables se fusionan en dos grupos:
 
 - **Antecedentes**: cualquier archivo en `variables/` cuyo nombre **no** contenga la palabra `consecuente`.
-- **Consecuentes**: archivos cuyo nombre **sí** contiene `consecuente`.
+- **Consecuentes**: archivos cuyo nombre **si** contiene `consecuente`.
 
 Cada variable se define como:
 
@@ -257,20 +317,20 @@ Notas importantes del motor (`PrediccionCushing._crear_variable_fuzzy`):
 
 - Si `tipo` **falta**, se asume `numerica`.
 - Solo existe tratamiento especial para `tipo == "categorica"`.
-  - En categóricas no se usa `universo`; internamente se crea un universo dummy `[0.0, 1.0]`.
-  - Cada término se define como lista de strings aceptadas.
-- `binaria` se trata como variable numérica con universo `[0,1]` y términos `si/no`.
+  - En categoricas no se usa `universo`; internamente se crea un universo dummy `[0.0, 1.0]`.
+  - Cada termino se define como lista de strings aceptadas.
+- `binaria` se trata como variable numerica (mismo flujo que `numerica`).
 
-#### Variables categóricas (detalle)
+#### Variables categoricas (detalle)
 
-En Cushing hay una variable categórica: `raza`.
+En Cushing hay una variable categorica: `raza`.
 
-- Cada término (`protectora`, `neutra`, `predispuesta_moderada`, `predispuesta_alta`) contiene una lista de razas aceptadas.
-- La pertenencia es “crisp”:
-  - si la raza está en la lista → membership = 1.0
-  - si no está → membership = 0.0
+- Cada termino contiene una lista de razas aceptadas.
+- La pertenencia es crisp:
+  - si la raza esta en la lista → membership = 1.0
+  - si no esta → membership = 0.0
 
-Normalización aplicada por el motor antes de comparar:
+Normalizacion aplicada por el motor antes de comparar:
 
 - `strip()`
 - `lower()`
@@ -281,9 +341,9 @@ Ejemplos:
 - `"Bichon Frise"` → `"bichon_frise"`
 - `"miniature-schnauzer"` → `"miniature_schnauzer"`
 
-### 6.3 Reglas
+### 7.3 Reglas
 
-Cada archivo en `conocimiento/cushing/reglas/*.json` contiene una lista de reglas. Estructura:
+Cada archivo en `backend/conocimiento/cushing/reglas/*.json` contiene una lista de reglas. Estructura:
 
 ```json
 [
@@ -303,14 +363,14 @@ Cada archivo en `conocimiento/cushing/reglas/*.json` contiene una lista de regla
 
 Compatibilidad:
 
-- El motor usa `conectiva` como operador lógico.
-- Si `conectiva` no está, intenta `tipo` (por compatibilidad) y por defecto asume `AND`.
+- El motor usa `conectiva` como operador logico.
+- Si `conectiva` no esta, intenta `tipo` y por defecto asume `AND`.
 
 ---
 
-## 7) Algoritmo de inferencia (cómo se calcula el riesgo)
+## 8) Algoritmo de inferencia (como se calcula el riesgo)
 
-### 7.1 Evaluación de reglas
+### 8.1 Evaluacion de reglas
 
 Cada regla tiene:
 
@@ -322,80 +382,81 @@ Para cada antecedente $i$ se calcula el grado de pertenencia:
 
 $$\mu_i = MF_i(x_i)$$
 
-Combinación:
+Combinacion:
 
-- AND → $\min(\mu_1, \mu_2, ..., \mu_n)$
-- OR → $\max(\mu_1, \mu_2, ..., \mu_n)$
+- AND -> $\min(\mu_1, \mu_2, ..., \mu_n)$
+- OR -> $\max(\mu_1, \mu_2, ..., \mu_n)$
 
-Activación final (con peso):
+Activacion final (con peso):
 
 $$\alpha = combine(\mu) \cdot weight$$
 
 Una regla se considera **activa** si $\alpha > 0$.
 
-### 7.2 Agregación Mamdani
+### 8.2 Agregacion Mamdani
 
 Para el consecuente (output) se usa:
 
-- implicación: **MIN** (recorte)
-- agregación: **MAX** (unión)
+- implicacion: **MIN** (recorte)
+- agregacion: **MAX** (union)
 
-Es decir, para cada regla activa:
-
-- se recorta la MF del término de salida con su activación:
+Para cada regla activa:
 
 $$\mu_{recortada}(u) = \min(\alpha, \mu_{consecuente}(u))$$
 
-- y luego se agrega sobre todas las reglas:
+Agregacion total:
 
 $$\mu_{agg}(u) = \max_{reglas}(\mu_{recortada}(u))$$
 
-### 7.3 Defuzzificación
+### 8.3 Defuzzificacion
 
 El motor usa **centroide** (`CentroidDefuzzifier`):
 
 $$crisp = \frac{\int u\,\mu_{agg}(u)\,du}{\int \mu_{agg}(u)\,du}$$
 
-### 7.4 Confianza
+### 8.4 Confianza compuesta
 
-La “confianza fuzzy” se define como:
+El motor calcula tres magnitudes:
 
-$$confidence = \max(\alpha_{reglas\ activas})$$
+- **Fuerza**: media autoponderada de activaciones.
+  $$fuerza = \frac{\sum (\alpha^2 \cdot w)}{\sum (\alpha \cdot w)}$$
 
-Es un indicador interno de “regla más fuerte”, útil para explicabilidad.
+- **Consenso**: fraccion de activacion ponderada que apunta al termino dominante.
+  $$consenso = \frac{\max(\sum \alpha \cdot w \; por\ termino)}{\sum (\alpha \cdot w)}$$
+
+- **Confianza final**:
+  $$confidence = fuerza \cdot consenso$$
 
 ---
 
-## 8) Variables definidas para Cushing (detalle completo)
+## 9) Variables definidas para Cushing (detalle actual)
 
-La configuración actual está en `conocimiento/cushing/variables/`.
+### 9.1 Demograficas (`backend/conocimiento/cushing/variables/demograficas.json`)
 
-### 8.1 Demográficas (`demograficas.json`)
-
-- `edad` (0–20 años, paso 0.1)
+- `edad` (0-20 anios, paso 0.1)
   - `joven`: `zmf(0, 4)`
   - `adulto`: `trimf(3, 6.5, 10)`
   - `mayor`: `smf(8, 12)`
 
-- `peso_relativo` (50–150 %, paso 1)
+- `peso_relativo` (50-150 %, paso 1)
   - `bajo`: `zmf(50, 85)`
   - `normal`: `trimf(80, 100, 120)`
   - `alto`: `smf(115, 140)`
 
-- `raza` (categórica)
+- `raza` (categorica)
   - `protectora`: `golden_retriever`, `labrador_retriever`, `border_collie`, `cocker_spaniel`
   - `neutra`: `mestizo`, `beagle`, `rottweiler`, `boxer`, `west_highland_white_terrier`, `cavalier_king_charles_spaniel`, `cockapoo`, `shih_tzu`, `pomeranian`, `english_springer_spaniel`, `pug`, `chihuahua`, `german_shepherd_dog`, `other_purebred`
   - `predispuesta_moderada`: `staffordshire_bull_terrier`, `jack_russell_terrier`, `lhasa_apso`, `yorkshire_terrier`, `poodle`, `dachshund`
   - `predispuesta_alta`: `bichon_frise`, `border_terrier`, `miniature_schnauzer`
 
-> En el JSON existe `pesos_numericos` para estos términos, pero **el motor actual no lo usa** (la raza se evalúa de forma crisp por pertenencia a la lista).
+> En el JSON existe `pesos_numericos` para estos terminos, pero **el motor actual no los usa**.
 
-### 8.2 Clínicas (`clinicas.json`)
+### 9.2 Clinicas (`backend/conocimiento/cushing/variables/clinicas.json`)
 
-Todas las clínicas comparten:
+Todas las clinicas comparten:
 
-- universo: 0–1 (paso 0.01)
-- términos:
+- universo: 0-1 (paso 0.01)
+- terminos:
   - `no`: `trimf(0, 0, 0.4)`
   - `si`: `trimf(0.6, 1, 1)`
 
@@ -410,31 +471,31 @@ Variables:
 - `polifagia`
 - `jadeo`
 
-### 8.3 Laboratorio (`laboratorio.json`)
+### 9.3 Laboratorio (`backend/conocimiento/cushing/variables/laboratorio.json`)
 
-- `alp` (0–3000 U/L, paso 10)
+- `alp` (0-3000 U/L, paso 10)
   - `normal`: `zmf(0, 150)`
   - `elevada`: `trimf(100, 400, 800)`
   - `muy_elevada`: `smf(700, 1500)`
 
-- `usg` (1.000–1.060, paso 0.001)
+- `usg` (1.000-1.060, paso 0.001)
   - `diluida`: `zmf(1.000, 1.015)`
   - `intermedia`: `trimf(1.010, 1.020, 1.030)`
   - `concentrada`: `smf(1.025, 1.045)`
 
-- `alt` (0–1500 U/L, paso 5)
+- `alt` (0-1500 U/L, paso 5)
   - `normal`: `zmf(0, 80)`
   - `elevada`: `trimf(60, 150, 350)`
   - `muy_elevada`: `smf(300, 700)`
 
-- `colesterol` (50–600 mg/dL, paso 5)
+- `colesterol` (50-600 mg/dL, paso 5)
   - `normal`: `zmf(50, 220)`
   - `elevado`: `trimf(180, 300, 450)`
   - `muy_elevado`: `smf(400, 550)`
 
-### 8.4 Variable de salida (`consecuente.json`)
+### 9.4 Variable de salida (`backend/conocimiento/cushing/variables/consecuente.json`)
 
-- `riesgo` (0–1, paso 0.01)
+- `riesgo` (0-1, paso 0.01)
   - `muy_bajo`: `zmf(0, 0.06)`
   - `bajo`: `trimf(0.02, 0.12, 0.24)`
   - `medio`: `trimf(0.28, 0.50, 0.72)`
@@ -443,9 +504,9 @@ Variables:
 
 ---
 
-## 9) Reglas de Cushing (qué hay implementado)
+## 10) Reglas de Cushing (que hay implementado)
 
-Las reglas están separadas por nivel de riesgo:
+Las reglas estan separadas por nivel de riesgo:
 
 - `riesgo_muy_bajo.json` (3 reglas)
 - `riesgo_bajo.json` (4 reglas)
@@ -453,83 +514,81 @@ Las reglas están separadas por nivel de riesgo:
 - `riesgo_alto.json` (10 reglas)
 - `riesgo_muy_alto.json` (4 reglas)
 
-Total: **27 reglas**.
+Total actual: **27 reglas**.
 
 Cada regla incluye:
 
-- `label`: descripción breve
-- `antecedentes`: lista de (variable, término)
+- `label`: descripcion breve
+- `antecedentes`: lista de (variable, termino)
 - `conectiva`: `AND` / `OR`
 - `consecuente`: `(riesgo, <nivel>)`
-- `peso`: ponderación (1.0 típico; 2.0 en reglas muy fuertes)
-- `fuente`: trazabilidad bibliográfica/justificación
+- `peso`: ponderacion (1.0 tipico; 2.0 en reglas muy fuertes)
+- `fuente`: trazabilidad bibliografica/justificacion
 
 ---
 
-## 10) Explicabilidad
+## 11) Explicabilidad
 
 Hay dos niveles de explicabilidad:
 
 1. **Retorno estructurado** (`results["rules"]`)
-   - Lista de `RuleResult` con activación, consecuente y peso.
+   - Lista de `RuleResult` con activacion, consecuente y peso.
 
 2. **Informe por consola** (`PrediccionCushing.explicar_decision()`)
-   - Imprime las reglas activadas con su activación y peso.
-
-Esto permite justificar *por qué* se obtuvo un riesgo alto/bajo.
+   - Imprime las reglas activadas con su activacion y peso.
 
 ---
 
-## 11) Cómo extender o adaptar el motor
+## 12) Como extender o adaptar el motor
 
-### 11.1 Añadir una nueva variable fuzzy
+### 12.1 Anadir una nueva variable fuzzy
 
-1. Declara la variable en un JSON dentro de `conocimiento/cushing/variables/`.
-2. Asegúrate de que el nombre coincide con la clave que usarán las reglas.
-3. **Actualiza `PrediccionCushing.predecir()`** para incluir el valor en `inputs`.
+1. Declara la variable en un JSON dentro de `backend/conocimiento/cushing/variables/`.
+2. Asegurate de que el nombre coincide con la clave que usaran las reglas.
+3. Actualiza `PrediccionCushing.predecir()` para incluir el valor en `inputs`.
 
-Si una regla usa una variable que no está en `inputs`, la evaluación fallará con:
+Si una regla usa una variable que no esta en `inputs`, la evaluacion fallara con:
 
-- `ValueError: Falta input para 'variable'`
+- `ValueError: Falta input para '<variable>'`
 
-### 11.2 Añadir reglas
+### 12.2 Anadir reglas
 
-1. Crea o edita un JSON en `conocimiento/cushing/reglas/`.
-2. Usa términos que existan en la variable.
+1. Crea o edita un JSON en `backend/conocimiento/cushing/reglas/`.
+2. Usa terminos que existan en la variable.
 3. Ajusta `peso` si quieres priorizar o despriorizar esa regla.
 
-### 11.3 Crear un predictor para otra patología
+### 12.3 Crear un predictor para otra patologia
 
-Patrón recomendado:
+Patron recomendado:
 
-- Crear `conocimiento/<patologia>/` con `metadata.json`, `variables/`, `reglas/`.
-- Crear `sistema/prediccion<Patologia>.py` copiando la estructura de `PrediccionCushing`.
-- Implementar el mapeo de entradas (`inputs`) desde módulos o desde un DTO.
+- Crear `backend/conocimiento/<patologia>/` con `metadata.json`, `variables/`, `reglas/`.
+- Crear `backend/sistema/prediccion<Patologia>.py` copiando la estructura de `PrediccionCushing`.
+- Implementar el mapeo de entradas (`inputs`) desde modulos o desde un DTO.
 
 ---
 
-## 12) Notas operativas (errores comunes)
+## 13) Notas operativas (errores comunes)
 
-- Si `raza` no coincide con las cadenas esperadas (normalizadas), su pertenencia será 0.0 y las reglas que dependan de raza pueden no activarse.
+- Si `raza` no coincide con las cadenas esperadas (normalizadas), su pertenencia sera 0.0 y las reglas que dependan de raza pueden no activarse.
 - Si **ninguna regla activa**, `FuzzySystem.infer()` lanza `ValueError("No hay reglas activas")`.
-  - Solución típica: revisar cobertura de reglas o entradas fuera de universo/etiquetas.
+- Si un valor numerico cae fuera del universo definido, se aplica clipping y se emite un warning.
 
 ---
 
-## 13) Referencias internas (código clave)
+## 14) Referencias internas (codigo clave)
 
-- `sistema/prediccionCushing.py`
-  - carga y fusión de base JSON
-  - creación de variables fuzzy (incluye categóricas)
-  - construcción de reglas
-  - ejecución de inferencia + explicabilidad
+- `backend/sistema/prediccionCushing.py`
+  - carga y fusion de base JSON
+  - creacion de variables fuzzy (incluye categoricas)
+  - construccion de reglas
+  - ejecucion de inferencia + explicabilidad
 
-- `logicaDifusa/sistema.py`
-  - Mamdani + defuzzificación centroide
-  - definición de `confidence` como max activación
+- `backend/logicaDifusa/sistema.py`
+  - Mamdani + defuzzificacion centroide
+  - calculo de `fuerza`, `consenso` y `confidence`
 
-- `logicaDifusa/reglas.py`
-  - evaluación de reglas (AND/OR, peso)
+- `backend/logicaDifusa/reglas.py`
+  - evaluacion de reglas (AND/OR, peso)
 
-- `conocimiento/cushing/*`
-  - “verdad” del modelo (variables + reglas)
+- `backend/conocimiento/cushing/*`
+  - verdad del modelo (variables + reglas)
