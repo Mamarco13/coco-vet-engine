@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi.encoders import jsonable_encoder
 import numpy as np
@@ -9,6 +10,17 @@ from modulos.moduloLaboratorio import ModuloLaboratorio
 from sistema.prediccionCushing import PrediccionCushing
 
 app = FastAPI(title="C.O.C.O API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class CushingInput(BaseModel):
