@@ -4,10 +4,10 @@ from pydantic import BaseModel
 from fastapi.encoders import jsonable_encoder
 import numpy as np
 
-from backend.modulos.moduloDemografico import ModuloDemografico
-from backend.modulos.moduloClinico import ModuloClinico
-from backend.modulos.moduloLaboratorio import ModuloLaboratorio
-from backend.sistema.prediccionCushing import PrediccionCushing
+from modulos.moduloDemografico import ModuloDemografico
+from modulos.moduloClinico import ModuloClinico
+from modulos.moduloLaboratorio import ModuloLaboratorio
+from sistema.prediccionCushing import PrediccionCushing
 
 app = FastAPI(title="C.O.C.O API")
 

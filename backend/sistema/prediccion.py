@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
-from backend.modulos.moduloDemografico import ModuloDemografico
-from backend.modulos.moduloClinico import ModuloClinico
-from backend.modulos.moduloLaboratorio import ModuloLaboratorio
+from modulos.moduloDemografico import ModuloDemografico
+from modulos.moduloClinico import ModuloClinico
+from modulos.moduloLaboratorio import ModuloLaboratorio
 
 class Prediccion(ABC):
     #-----------------------------------------#
