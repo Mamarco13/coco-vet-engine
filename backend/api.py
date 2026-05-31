@@ -16,6 +16,8 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
+        # GitHub Pages — cambia "Mamarco13" y "coco-vet-engine" si es necesario
+        "https://mamarco13.github.io",
     ],
     allow_credentials=True,
     allow_methods=["*"],
