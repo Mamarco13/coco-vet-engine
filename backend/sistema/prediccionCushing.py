@@ -22,24 +22,24 @@ Arquitectura aplicada:
 
 from .prediccion import Prediccion
 
-from modulos.moduloDemografico import ModuloDemografico
-from modulos.moduloClinico import ModuloClinico
-from modulos.moduloLaboratorio import ModuloLaboratorio
+from backend.modulos.moduloDemografico import ModuloDemografico
+from backend.modulos.moduloClinico import ModuloClinico
+from backend.modulos.moduloLaboratorio import ModuloLaboratorio
 
-from logicaDifusa.variables import FuzzyVariable
+from backend.logicaDifusa.variables import FuzzyVariable
 
-from logicaDifusa.funcionesPertenencia import (
+from backend.logicaDifusa.funcionesPertenencia import (
     TriangularMF,
     ZShapeMF,
     SShapeMF
 )
 
-from logicaDifusa.reglas import (
+from backend.logicaDifusa.reglas import (
     Rule,
     FuzzyOperator
 )
 
-from logicaDifusa.sistema import FuzzySystem
+from backend.logicaDifusa.sistema import FuzzySystem
 
 import json
 import os
@@ -562,6 +562,8 @@ class PrediccionCushing(Prediccion):
                 1.0
             )
 
+            label_text = regla_json.get("label")
+
             nueva_regla = Rule(
                 antecedents=antecedents,
                 consequent=(
@@ -569,7 +571,8 @@ class PrediccionCushing(Prediccion):
                     consequent_term
                 ),
                 operator=fuzzy_operator,
-                weight=peso
+                weight=peso,
+                label=str(label_text) if label_text is not None else None
             )
 
             self.system.add_rule(

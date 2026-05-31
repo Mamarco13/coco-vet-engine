@@ -1,14 +1,28 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from fastapi.encoders import jsonable_encoder
 import numpy as np
 
-from modulos.moduloDemografico import ModuloDemografico
-from modulos.moduloClinico import ModuloClinico
-from modulos.moduloLaboratorio import ModuloLaboratorio
-from sistema.prediccionCushing import PrediccionCushing
+from backend.modulos.moduloDemografico import ModuloDemografico
+from backend.modulos.moduloClinico import ModuloClinico
+from backend.modulos.moduloLaboratorio import ModuloLaboratorio
+from backend.sistema.prediccionCushing import PrediccionCushing
 
 app = FastAPI(title="C.O.C.O API")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+        # GitHub Pages — cambia "Mamarco13" y "coco-vet-engine" si es necesario
+        "https://mamarco13.github.io",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 class CushingInput(BaseModel):
@@ -36,6 +50,7 @@ def serialize_result(result):
             "activation": getattr(item, "activation", None),
             "consequent": getattr(item, "consequent", None),
             "weight": getattr(getattr(item, "rule", None), "weight", None),
+            "label": getattr(getattr(item, "rule", None), "label", None),
         })
 
     return {
