@@ -4,10 +4,10 @@
 """
 
 import argparse
-from sistema.prediccionCushing import PrediccionCushing
-from modulos.moduloDemografico import ModuloDemografico
-from modulos.moduloClinico import ModuloClinico
-from modulos.moduloLaboratorio import ModuloLaboratorio
+from backend.sistema.prediccionCushing import PrediccionCushing
+from backend.modulos.moduloDemografico import ModuloDemografico
+from backend.modulos.moduloClinico import ModuloClinico
+from backend.modulos.moduloLaboratorio import ModuloLaboratorio
 
 def main():
     # =====================================================

@@ -8,7 +8,7 @@ export type AnalysisResult = {
   confidence: number;
   summary: string;
   recommendations: string[];
-  rules: Array<{ activation: number; consequent: string | string[]; weight: number }>;
+  rules: Array<{ activation: number; consequent: string | string[]; weight: number; label?: string }>;
 };
 
 type CushingPayload = {
@@ -96,6 +96,7 @@ function buildResultFromApi(
       activation: rule.activation,
       consequent: rule.consequent,
       weight: rule.weight,
+      label: (rule as any).label,
     })),
   };
 }

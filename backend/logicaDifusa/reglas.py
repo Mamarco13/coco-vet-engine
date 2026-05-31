@@ -79,7 +79,8 @@ class Rule:
         antecedents,
         consequent,
         operator=FuzzyOperator.AND,
-        weight=1.0
+        weight=1.0,
+        label=None
     ):
         """!
         @brief Constructor de regla.
@@ -88,12 +89,14 @@ class Rule:
         @param consequent Consecuente de la regla.
         @param operator Operador lógico fuzzy.
         @param weight Peso de la regla.
+        @param label Etiqueta descriptiva legible de la regla.
         """
 
         self.antecedents = antecedents
         self.consequent = consequent
         self.operator = operator
         self.weight = weight
+        self.label = label
 
     def evaluate(self, inputs):
         """!

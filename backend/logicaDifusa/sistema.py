@@ -263,10 +263,27 @@ class FuzzySystem:
         )
  
         if not active_rules:
- 
-            raise ValueError(
-                "No hay reglas activas"
+            aggregated = np.zeros_like(
+                output_variable.universe,
+                dtype=float
             )
+
+            crisp_value = float(output_variable.universe[0])
+            label, etiqueta = self._get_label(
+                output_variable,
+                crisp_value
+            )
+
+            return {
+                "crisp": crisp_value,
+                "label": label,
+                "etiqueta": etiqueta,
+                "confidence": 0.0,
+                "fuerza": 0.0,
+                "consenso": 0.0,
+                "rules": active_rules,
+                "aggregated": aggregated
+            }
  
         # ==========================================
         # AGREGACIÓN

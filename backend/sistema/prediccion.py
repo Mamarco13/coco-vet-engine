@@ -1,16 +1,16 @@
 from abc import ABC, abstractmethod
-import modulos.moduloDemografico
-import modulos.moduloClinico
-import modulos.moduloLaboratorio
+from backend.modulos.moduloDemografico import ModuloDemografico
+from backend.modulos.moduloClinico import ModuloClinico
+from backend.modulos.moduloLaboratorio import ModuloLaboratorio
 
 class Prediccion(ABC):
     #-----------------------------------------#
     #             CONSTRUCTORES               #       
     #-----------------------------------------#
 
-    def __init__(self, moduloDemografico: modulos.moduloDemografico.ModuloDemografico=None,
-                       moduloClinico: modulos.moduloClinico.ModuloClinico=None,
-                       moduloLaboratorio: modulos.moduloLaboratorio.ModuloLaboratorio=None):
+    def __init__(self, moduloDemografico: ModuloDemografico = None,
+                       moduloClinico: ModuloClinico = None,
+                       moduloLaboratorio: ModuloLaboratorio = None):
             self.moduloDemografico = moduloDemografico
             self.moduloClinico = moduloClinico
             self.moduloLaboratorio = moduloLaboratorio

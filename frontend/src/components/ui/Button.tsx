@@ -23,6 +23,7 @@ type ButtonLinkProps = BaseProps & {
   href: string;
   target?: string;
   rel?: string;
+  prefetch?: boolean;
 };
 
 const baseStyles =
@@ -85,12 +86,14 @@ export function ButtonLink({
   href,
   target,
   rel,
+  prefetch = false,
 }: ButtonLinkProps) {
   return (
     <Link
       href={href}
       target={target}
       rel={rel}
+      prefetch={prefetch}
       className={cn(baseStyles, variantStyles[variant], sizeStyles[size], className)}
       aria-busy={isLoading || undefined}
     >

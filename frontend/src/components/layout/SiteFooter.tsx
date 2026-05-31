@@ -14,9 +14,9 @@ export function SiteFooter() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-4 text-xs font-semibold uppercase tracking-[0.2em]">
-          <Link href="/">Inicio</Link>
-          <Link href="/analyze">Analizar</Link>
-          <Link href="/results">Resultados</Link>
+          <Link href="/" prefetch={false}>Inicio</Link>
+          <Link href="/analyze" prefetch={false}>Analizar</Link>
+          <Link href="/results" prefetch={false}>Resultados</Link>
         </div>
       </div>
     </footer>

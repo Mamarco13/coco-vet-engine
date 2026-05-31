@@ -18,9 +18,9 @@ export function SiteHeader() {
           </div>
         </Link>
         <nav className="hidden items-center gap-6 text-sm font-semibold text-[var(--foreground)] md:flex">
-          <Link href="/">Inicio</Link>
-          <Link href="/analyze">Analizar</Link>
-          <Link href="/results">Resultados</Link>
+          <Link href="/" prefetch={false}>Inicio</Link>
+          <Link href="/analyze" prefetch={false}>Analizar</Link>
+          <Link href="/results" prefetch={false}>Resultados</Link>
         </nav>
         <div className="flex items-center gap-3">
           <ButtonLink href="/analyze" size="sm">
