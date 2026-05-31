@@ -3,6 +3,8 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import CocoImg from "../../public/Coco.jpeg";
+import pataImg from "../../public/pata.png";
 import { diseases } from "@/lib/diseases";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -150,7 +152,7 @@ export default function Home() {
           <div className="absolute -left-6 top-6 hidden h-24 w-24 rounded-3xl bg-[var(--accent-2)] lg:block" />
           <div className="glass grid-dots relative rounded-[32px] p-4">
             <Image
-              src="/Coco.jpeg"
+              src={CocoImg}
               alt="Perro en revision"
               width={480}
               height={520}
@@ -240,7 +242,7 @@ export default function Home() {
           <div className="relative">
             <div className="glass absolute -left-6 -top-6 hidden h-24 w-24 rounded-3xl lg:block" />
             <div className="glass rounded-[32px] p-6">
-              <Image src="/pata.png" alt="Icono pata" width={64} height={64} />
+              <Image src={pataImg} alt="Icono pata" width={64} height={64} />
               <h3 className="mt-6 text-lg font-semibold text-[var(--foreground)]">
                 Plataforma modular por capas
               </h3>
