@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { ChangeEvent, useState } from "react";
-import pataImg from "../../public/pata.png";
+import pataImg from "../../../public/pata.png";
 import { useRouter } from "next/navigation";
 import { analyzeCushing } from "@/lib/api";
 import { diseases } from "@/lib/diseases";
