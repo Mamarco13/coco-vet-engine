@@ -13,6 +13,7 @@ import { Loader } from "@/components/ui/Loader";
 import { Modal } from "@/components/ui/Modal";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { DocumentUploader } from "@/components/ui/DocumentUploader";
+import { VoiceRecorder } from "@/components/ui/VoiceRecorder";
 import type { ExtractedFormData } from "@/components/ui/DocumentUploader";
 
 type CushingFormState = {
@@ -216,6 +217,15 @@ export default function AnalyzePage() {
                 Extracción automática con IA
               </p>
               <DocumentUploader onExtracted={handleDocumentExtracted} />
+
+              {/* Divider voz/documento */}
+              <div className="flex items-center gap-3 py-1">
+                <div className="h-px flex-1 bg-black/6" />
+                <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[var(--muted)]">o dicta por voz</p>
+                <div className="h-px flex-1 bg-black/6" />
+              </div>
+
+              <VoiceRecorder onExtracted={handleDocumentExtracted} />
             </div>
 
             {/* Divider */}
@@ -463,27 +473,6 @@ export default function AnalyzePage() {
             </Button>
             <p className="text-[11px] text-[var(--muted)]">
               Esta herramienta no sustituye la evaluación de un veterinario.
-            </p>
-          </Card>
-
-          {/* Info de tiempo */}
-          <Card className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
-                style={{ background: "rgba(13,139,141,0.1)" }}
-              >
-                <Image src={pataImg} alt="Pata" width={22} height={22} />
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.25em] text-[var(--muted)]">
-                  Tiempo estimado
-                </p>
-                <p className="text-base font-semibold text-[var(--foreground)]">1 – 2 segundos</p>
-              </div>
-            </div>
-            <p className="text-xs text-[var(--muted)]">
-              El motor difuso procesa los parámetros localmente y genera un reporte inmediato.
             </p>
           </Card>
         </div>

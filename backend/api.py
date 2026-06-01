@@ -11,7 +11,7 @@ from modulos.moduloDemografico import ModuloDemografico
 from modulos.moduloClinico import ModuloClinico
 from modulos.moduloLaboratorio import ModuloLaboratorio
 from sistema.prediccionCushing import PrediccionCushing
-from gemini_service import extract_document_data, get_missing_fields
+from gemini_service import extract_document_data, extract_voice_data, get_missing_fields
 
 # Carga las variables de entorno desde backend/.env
 load_dotenv()
@@ -125,6 +125,50 @@ async def extraer_documento(file: UploadFile = File(...)):
         ) from exc
 
     # Identificar campos que Gemini no pudo extraer (valor null)
+    missing_fields = get_missing_fields(raw_json)
+
+    return {
+        "ok": True,
+        "data": extracted_data,
+        "missing_fields": missing_fields,
+        "extracted_count": len(extracted_data) - len(missing_fields),
+        "total_fields": len(extracted_data),
+    }
+
+
+class VoiceInput(BaseModel):
+    """Transcripción de voz dictada por el veterinario."""
+    transcript: str
+
+
+@app.post("/api/extraer-voz")
+async def extraer_voz(body: VoiceInput):
+    """
+    Recibe la transcripción de un dictado de voz del veterinario, la envía
+    a Gemini y retorna los campos clínicos inferidos junto con los campos
+    no encontrados. Devuelve la misma estructura que /api/extraer-documento.
+    """
+    if not body.transcript.strip():
+        raise HTTPException(
+            status_code=400,
+            detail="El campo 'transcript' no puede estar vacío.",
+        )
+
+    try:
+        raw_json = extract_voice_data(body.transcript)
+    except ValueError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    try:
+        extracted_data = json.loads(raw_json)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(
+            status_code=502,
+            detail="La IA devolvió una respuesta con formato inválido.",
+        ) from exc
+
     missing_fields = get_missing_fields(raw_json)
 
     return {

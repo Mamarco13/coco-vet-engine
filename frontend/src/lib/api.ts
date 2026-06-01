@@ -161,3 +161,23 @@ export async function extractDocumentData(file: File): Promise<ExtractionResult>
 
   return response.json() as Promise<ExtractionResult>;
 }
+
+/**
+ * Sends a voice transcript to the backend so Gemini can infer
+ * the clinical fields from colloquial speech.
+ */
+export async function extractVoiceData(transcript: string): Promise<ExtractionResult> {
+  const response = await fetch(`${API_BASE}/api/extraer-voz`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ transcript }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null);
+    const detail = errorBody?.detail ?? `Error ${response.status}`;
+    throw new Error(detail);
+  }
+
+  return response.json() as Promise<ExtractionResult>;
+}
