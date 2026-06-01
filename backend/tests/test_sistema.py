@@ -11,7 +11,7 @@ Cubre:
     - _get_label hace clipping sin lanzar excepción
     - consenso = 1 cuando todas las reglas concuerdan
     - consenso < 1 cuando las reglas apuntan a términos distintos
-    - sin reglas activas lanza ValueError
+    - sin reglas activas retorna resultado con confidence=0
 """
 
 import pytest
@@ -197,8 +197,8 @@ class TestConfianza:
 
 class TestErrores:
 
-    def test_sin_reglas_activas_lanza_error(self, sistema, output):
-        """Regla que no puede activarse con la entrada dada."""
+    def test_sin_reglas_activas_retorna_confianza_cero(self, sistema, output):
+        """Sin reglas activas el sistema retorna un resultado válido con métricas a 0."""
         u = np.arange(0, 1.01, 0.01)
         mf = TriangularMF(u, 0.4, 0.5, 0.6)
         rule = Rule(
@@ -207,8 +207,14 @@ class TestErrores:
         )
         sistema.add_rule(rule)
 
-        with pytest.raises(ValueError, match="No hay reglas activas"):
-            sistema.infer({"x": 0.0}, output)
+        result = sistema.infer({"x": 0.0}, output)  # x=0.0 no activa la MF [0.4, 0.5, 0.6]
+
+        assert result["confidence"] == 0.0
+        assert result["fuerza"] == 0.0
+        assert result["consenso"] == 0.0
+        assert result["rules"] == []
+        assert "crisp" in result
+        assert "label" in result
 
     def test_clear_rules_vacia_el_sistema(self, sistema, output):
         sistema.add_rule(regla_simple("alto"))

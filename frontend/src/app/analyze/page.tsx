@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { ChangeEvent, useState } from "react";
+import pataImg from "../../../public/pata.png";
 import { useRouter } from "next/navigation";
 import { analyzeCushing } from "@/lib/api";
 import { diseases } from "@/lib/diseases";
@@ -429,7 +430,7 @@ export default function AnalyzePage() {
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl"
                 style={{ background: "rgba(13,139,141,0.1)" }}
               >
-                <Image src="/pata.png" alt="Pata" width={22} height={22} />
+                <Image src={pataImg} alt="Pata" width={22} height={22} />
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.25em] text-[var(--muted)]">

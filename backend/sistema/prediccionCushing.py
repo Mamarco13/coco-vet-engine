@@ -22,24 +22,24 @@ Arquitectura aplicada:
 
 from .prediccion import Prediccion
 
-from backend.modulos.moduloDemografico import ModuloDemografico
-from backend.modulos.moduloClinico import ModuloClinico
-from backend.modulos.moduloLaboratorio import ModuloLaboratorio
+from modulos.moduloDemografico import ModuloDemografico
+from modulos.moduloClinico import ModuloClinico
+from modulos.moduloLaboratorio import ModuloLaboratorio
 
-from backend.logicaDifusa.variables import FuzzyVariable
+from logicaDifusa.variables import FuzzyVariable
 
-from backend.logicaDifusa.funcionesPertenencia import (
+from logicaDifusa.funcionesPertenencia import (
     TriangularMF,
     ZShapeMF,
     SShapeMF
 )
 
-from backend.logicaDifusa.reglas import (
+from logicaDifusa.reglas import (
     Rule,
     FuzzyOperator
 )
 
-from backend.logicaDifusa.sistema import FuzzySystem
+from logicaDifusa.sistema import FuzzySystem
 
 import json
 import os

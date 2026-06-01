@@ -1,7 +1,7 @@
 "use client";
 
 import type { CSSProperties } from "react";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { AnalysisResult, buildMockResult } from "@/lib/api";
 import { diseases, getDiseaseById } from "@/lib/diseases";
@@ -84,7 +84,7 @@ const RISK_LABEL_MAP: Record<string, string> = {
   muy_alto: "Riesgo muy alto",
 };
 
-export default function ResultsPage() {
+function ResultsPage() {
   const searchParams = useSearchParams();
   const diseaseId = searchParams.get("d") ?? diseases[0]?.id ?? "cushing";
   const disease = getDiseaseById(diseaseId);
@@ -341,5 +341,21 @@ export default function ResultsPage() {
         </p>
       </Modal>
     </div>
+  );
+}
+
+export default function ResultsPageWrapper() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto w-full max-w-6xl px-6 pb-20 pt-6">
+          <Card className="flex items-center justify-center py-16">
+            <Loader label="Cargando resultados…" />
+          </Card>
+        </div>
+      }
+    >
+      <ResultsPage />
+    </Suspense>
   );
 }
