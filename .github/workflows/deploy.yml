@@ -11,7 +11,6 @@ permissions:
   pages: write
   id-token: write
 
-# Solo un despliegue simultáneo
 concurrency:
   group: "deploy"
   cancel-in-progress: false
@@ -67,9 +66,6 @@ jobs:
       - name: Build (static export)
         working-directory: frontend
         env:
-          # URL pública del backend en Render.
-          # Configúrala en: GitHub repo → Settings → Secrets → Actions → NEXT_PUBLIC_API_BASE
-          # Ejemplo: https://coco-backend.onrender.com
           NEXT_PUBLIC_API_BASE: ${{ secrets.NEXT_PUBLIC_API_BASE }}
           NODE_ENV: production
         run: npm run build
@@ -104,10 +100,7 @@ jobs:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     steps:
       - name: Trigger Render deploy hook
-        # RENDER_DEPLOY_HOOK_URL se obtiene en:
-        # Render Dashboard → tu servicio → Settings → Deploy Hook → Copy URL
-        # Luego añádela en: GitHub repo → Settings → Secrets → Actions → RENDER_DEPLOY_HOOK_URL
         run: |
           curl -s --fail-with-body \
             "${{ secrets.RENDER_DEPLOY_HOOK_URL }}" \
-            -X POST
+            -X POST

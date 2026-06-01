@@ -7,7 +7,7 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
 
-import cocoImg from "../../../public/Coco.jpeg";
+import cocoImg from "../../public/Coco.jpeg";
 
 const heroHighlights = [
   {
