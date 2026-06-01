@@ -13,12 +13,53 @@ type Props = {
   onExtracted: (data: ExtractedFormData, missingFields: string[]) => void;
 };
 
-// ─── Web Speech API browser types ──────────────────────────────────────────────
+// ─── Web Speech API — interfaces propias (no dependen de lib.dom.d.ts) ─────────
+// Definimos solo lo que usamos para que el build en CI no falle cuando
+// el entorno de TypeScript no incluye SpeechRecognition en sus tipos globales.
+
+interface ISpeechRecognitionAlternative {
+  readonly transcript: string;
+}
+
+interface ISpeechRecognitionResult {
+  readonly isFinal: boolean;
+  readonly length: number;
+  item(index: number): ISpeechRecognitionAlternative;
+  [index: number]: ISpeechRecognitionAlternative;
+}
+
+interface ISpeechRecognitionResultList {
+  readonly length: number;
+  item(index: number): ISpeechRecognitionResult;
+  [index: number]: ISpeechRecognitionResult;
+}
+
+interface ISpeechRecognitionEvent extends Event {
+  readonly resultIndex: number;
+  readonly results: ISpeechRecognitionResultList;
+}
+
+interface ISpeechRecognitionErrorEvent extends Event {
+  readonly error: string;
+}
+
+interface ISpeechRecognition extends EventTarget {
+  lang: string;
+  continuous: boolean;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onstart: (() => void) | null;
+  onresult: ((event: ISpeechRecognitionEvent) => void) | null;
+  onerror: ((event: ISpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+}
 
 declare global {
   interface Window {
-    SpeechRecognition: new () => SpeechRecognition;
-    webkitSpeechRecognition: new () => SpeechRecognition;
+    SpeechRecognition: new () => ISpeechRecognition;
+    webkitSpeechRecognition: new () => ISpeechRecognition;
   }
 }
 
@@ -83,7 +124,7 @@ export function VoiceRecorder({ onExtracted }: Props) {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [browserSupported, setBrowserSupported] = useState(true);
 
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<ISpeechRecognition | null>(null);
   // Ref that mirrors `transcript` state — always has the latest value
   // synchronously, even inside recognition event callbacks.
   const transcriptRef = useRef("");
@@ -115,7 +156,7 @@ export function VoiceRecorder({ onExtracted }: Props) {
       setErrorMsg(null);
     };
 
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
+    recognition.onresult = (event: ISpeechRecognitionEvent) => {
       let finalPart = "";
       let interimPart = "";
       for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -133,7 +174,7 @@ export function VoiceRecorder({ onExtracted }: Props) {
       setInterimText(interimPart);
     };
 
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+    recognition.onerror = (event: ISpeechRecognitionErrorEvent) => {
       if (event.error === "no-speech") return; // ignore silence
       setErrorMsg(`Error de reconocimiento: ${event.error}`);
       setState("error");
