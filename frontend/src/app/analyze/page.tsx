@@ -102,7 +102,7 @@ export default function AnalyzePage() {
       for (const [key, value] of Object.entries(data)) {
         if (value === null || value === undefined) continue;
         if (key in prev) {
-          // Booleans stay as booleans; numbers/strings become strings for inputs
+          // Los booleanos se mantienen; números/strings se convierten a strings para los inputs
           (next as Record<string, unknown>)[key] =
             typeof value === "boolean" ? value : String(value);
         }

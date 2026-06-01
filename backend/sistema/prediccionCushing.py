@@ -112,9 +112,7 @@ class PrediccionCushing(Prediccion):
         # Variables fuzzy
         self.variables = {}
 
-    # =====================================================
     # BASE DE CONOCIMIENTO
-    # =====================================================
 
     def _cargar_base_conocimiento(self):
         """!
@@ -147,9 +145,7 @@ class PrediccionCushing(Prediccion):
             "reglas": []
         }
 
-        # =====================================================
         # METADATA
-        # =====================================================
 
         metadata_path = os.path.join(
             self.base_conocimiento_path,
@@ -170,9 +166,7 @@ class PrediccionCushing(Prediccion):
                 metadata_path
             )
 
-        # =====================================================
         # VARIABLES
-        # =====================================================
 
         variables_path = os.path.join(
             self.base_conocimiento_path,
@@ -209,9 +203,7 @@ class PrediccionCushing(Prediccion):
                 archivo_variable
             )
 
-            # ==========================================
             # CONSECUENTES
-            # ==========================================
 
             if "consecuente" in nombre_archivo:
 
@@ -221,9 +213,7 @@ class PrediccionCushing(Prediccion):
                     contenido
                 )
 
-            # ==========================================
             # ANTECEDENTES
-            # ==========================================
 
             else:
 
@@ -233,9 +223,7 @@ class PrediccionCushing(Prediccion):
                     contenido
                 )
 
-        # =====================================================
         # REGLAS
-        # =====================================================
 
         reglas_path = os.path.join(
             self.base_conocimiento_path,
@@ -295,9 +283,7 @@ class PrediccionCushing(Prediccion):
 
         return base
 
-    # =====================================================
     # UNIVERSOS
-    # =====================================================
 
     def _crear_universo(self, universo):
         """!
@@ -315,9 +301,7 @@ class PrediccionCushing(Prediccion):
             paso
         )
 
-    # =====================================================
     # VARIABLES FUZZY
-    # =====================================================
 
     def _crear_variable_fuzzy(
         
@@ -332,9 +316,7 @@ class PrediccionCushing(Prediccion):
         @param definicion Definición JSON.
         @return Variable fuzzy creada.
         """
-        # ==========================================
         # VARIABLES CATEGÓRICAS
-        # ==========================================
 
         if definicion.get(
             "tipo",
@@ -417,9 +399,7 @@ class PrediccionCushing(Prediccion):
 
         return variable
 
-    # =====================================================
     # FUZZIFICACIÓN
-    # =====================================================
 
     def fuzzificar_datos(self):
         """!
@@ -475,9 +455,7 @@ class PrediccionCushing(Prediccion):
                 variable
             )
 
-    # =====================================================
     # REGLAS
-    # =====================================================
 
     def implementar_reglas(self):
         """!
@@ -580,9 +558,7 @@ class PrediccionCushing(Prediccion):
             )
 
 
-    # =====================================================
     # VALIDACIÓN DE ESQUEMA JSON
-    # =====================================================
 
     def _validar_metadata(self, datos, path):
         """!
@@ -810,9 +786,7 @@ class PrediccionCushing(Prediccion):
                 f"no puede ser negativo."
             )
 
-    # =====================================================
     # VALIDACIÓN DE ENTRADAS
-    # =====================================================
 
     def _validar_y_clipear_inputs(self, inputs):
         """!
@@ -874,9 +848,7 @@ class PrediccionCushing(Prediccion):
 
         return validados
 
-    # =====================================================
     # PREDICCIÓN
-    # =====================================================
 
     def predecir(self):
         """!
@@ -968,9 +940,7 @@ class PrediccionCushing(Prediccion):
 
         return results
 
-    # =====================================================
     # EXPLICABILIDAD
-    # =====================================================
 
     def explicar_decision(self):
         """!

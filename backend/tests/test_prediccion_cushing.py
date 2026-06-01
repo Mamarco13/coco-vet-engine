@@ -22,9 +22,7 @@ from modulos.moduloClinico import ModuloClinico
 from modulos.moduloLaboratorio import ModuloLaboratorio
 
 
-# ======================================================
 # MOCKS DE MÓDULOS
-# ======================================================
 
 def demografico(**kwargs):
     defaults = {"edad": 10, "raza": "bichon_frise", "peso_rel": 100}
@@ -60,9 +58,7 @@ def predictor_completo(**kwargs):
     return p
 
 
-# ======================================================
 # TESTS — Clipping de entradas
-# ======================================================
 
 class TestClipping:
 
@@ -118,9 +114,7 @@ class TestClipping:
             assert len(w) == 1  # solo un warning
 
 
-# ======================================================
 # TESTS — Validación de metadata
-# ======================================================
 
 
 class TestValidarMetadata:
@@ -154,9 +148,7 @@ class TestValidarMetadata:
         with pytest.raises(ValueError, match="descripcion"):
             self.p._validar_metadata(datos, "metadata.json")
 
-# ======================================================
 # TESTS — Validación de variable
-# ======================================================
 
 class TestValidarVariable:
 
@@ -233,9 +225,7 @@ class TestValidarVariable:
             self.p._validar_variable("raza", defn, "vars.json")
 
 
-# ======================================================
 # TESTS — Validación de regla
-# ======================================================
 
 class TestValidarRegla:
 
@@ -305,9 +295,7 @@ class TestValidarRegla:
             self.p._validar_regla(regla, 1, "reglas.json")
 
 
-# ======================================================
 # TEST DE INTEGRACIÓN — predecir() end-to-end
-# ======================================================
 
 class TestIntegracion:
 

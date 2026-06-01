@@ -9,9 +9,7 @@ from logicaDifusa.variables import FuzzyVariable
 from logicaDifusa.funcionesPertenencia import TriangularMF
 
 
-# ======================================================
 # FIXTURES
-# ======================================================
 
 @pytest.fixture
 def universo():
@@ -33,9 +31,7 @@ def mf_baja(universo):
     return TriangularMF(universo, 0.0, 0.2, 0.4)
 
 
-# ======================================================
 # TESTS — ADD / GET / CONTAINS
-# ======================================================
 
 class TestAddGet:
 
@@ -64,9 +60,7 @@ class TestAddGet:
             variable.get_membership("inexistente")
 
 
-# ======================================================
 # TESTS — FUZZIFY
-# ======================================================
 
 class TestFuzzify:
 
@@ -97,9 +91,7 @@ class TestFuzzify:
         assert 0.45 < result["media"] < 0.55
 
 
-# ======================================================
 # TESTS — ETIQUETAS / LEN / REMOVE / CLEAR
-# ======================================================
 
 class TestManagement:
 

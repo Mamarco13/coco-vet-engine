@@ -10,9 +10,7 @@ from logicaDifusa.funcionesPertenencia import TriangularMF
 from logicaDifusa.reglas import Rule, FuzzyOperator
 
 
-# ======================================================
 # HELPERS
-# ======================================================
 
 def crear_antecedente(nombre, a, b, c, term="activo"):
     """Crea una tupla (nombre_variable, membership_function)."""
@@ -21,9 +19,7 @@ def crear_antecedente(nombre, a, b, c, term="activo"):
     return nombre, mf
 
 
-# ======================================================
 # TESTS — OPERADOR AND
-# ======================================================
 
 class TestAND:
 
@@ -73,9 +69,7 @@ class TestAND:
         assert abs(result - 0.0) < 1e-6
 
 
-# ======================================================
 # TESTS — OPERADOR OR
-# ======================================================
 
 class TestOR:
 
@@ -110,9 +104,7 @@ class TestOR:
         assert abs(result - 0.0) < 1e-6
 
 
-# ======================================================
 # TESTS — PESO
-# ======================================================
 
 class TestPeso:
 
@@ -160,9 +152,7 @@ class TestPeso:
             rule.set_weight(-0.1)
 
 
-# ======================================================
 # TESTS — ERRORES DE EVALUACIÓN
-# ======================================================
 
 class TestErrores:
 

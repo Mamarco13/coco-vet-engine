@@ -150,18 +150,14 @@ class FuzzySystem:
                 membership.get_membership()
             )
  
-            # ======================================
             # IMPLICACIÓN (MIN)
-            # ======================================
  
             clipped = np.minimum(
                 activation,
                 consequent_mf
             )
  
-            # ======================================
             # AGREGACIÓN (MAX)
-            # ======================================
  
             aggregated = np.maximum(
                 aggregated,
@@ -254,9 +250,7 @@ class FuzzySystem:
         @return Resultado inferencia.
         """
  
-        # ==========================================
         # REGLAS ACTIVAS
-        # ==========================================
  
         active_rules = self.get_active_rules(
             inputs
@@ -285,27 +279,21 @@ class FuzzySystem:
                 "aggregated": aggregated
             }
  
-        # ==========================================
         # AGREGACIÓN
-        # ==========================================
  
         aggregated = self._aggregate_outputs(
             active_rules,
             output_variable
         )
  
-        # ==========================================
         # DEFUZZIFICACIÓN
-        # ==========================================
  
         crisp_value = self.defuzzifier.compute(
             output_variable.universe,
             aggregated
         )
  
-        # ==========================================
         # CONFIANZA FUZZY COMPUESTA
-        # ==========================================
  
         # --- FUERZA: media ponderada de activaciones ---
         # Refleja qué tan fuerte activaron las reglas
@@ -369,9 +357,7 @@ class FuzzySystem:
  
         confidence = fuerza * consenso
  
-        # ==========================================
         # ETIQUETA LINGUISTICA
-        # ==========================================
  
         label, etiqueta = self._get_label(
             output_variable,

@@ -126,21 +126,19 @@ export function buildMockResult(diseaseId: string) {
   return buildResult(diseaseId, 0.56);
 }
 
-// ─── Document Extraction ──────────────────────────────────────────────────────
-
 export type ExtractionResult = {
   ok: boolean;
-  /** Partial form fields extracted from the document (null values omitted). */
+  /** Campos parciales extraídos del documento (se omiten los valores nulos). */
   data: Partial<Record<string, string | number | boolean | null>>;
-  /** List of field names Gemini could not find in the document. */
+  /** Lista de nombres de campos que no se pudieron encontrar en el documento. */
   missing_fields: string[];
   extracted_count: number;
   total_fields: number;
 };
 
 /**
- * Uploads a document file to the backend and returns the fields
- * that Gemini was able to extract from it.
+ * Sube un archivo de documento al backend y devuelve los campos
+ * que se pudieron extraer del mismo.
  */
 export async function extractDocumentData(file: File): Promise<ExtractionResult> {
   const formData = new FormData();
@@ -149,8 +147,6 @@ export async function extractDocumentData(file: File): Promise<ExtractionResult>
   const response = await fetch(`${API_BASE}/api/extraer-documento`, {
     method: "POST",
     body: formData,
-    // Do NOT set Content-Type manually — the browser adds the correct
-    // multipart/form-data boundary automatically.
   });
 
   if (!response.ok) {
@@ -163,8 +159,8 @@ export async function extractDocumentData(file: File): Promise<ExtractionResult>
 }
 
 /**
- * Sends a voice transcript to the backend so Gemini can infer
- * the clinical fields from colloquial speech.
+ * Envía una transcripción de voz al backend para inferir
+ * los campos clínicos a partir del habla coloquial.
  */
 export async function extractVoiceData(transcript: string): Promise<ExtractionResult> {
   const response = await fetch(`${API_BASE}/api/extraer-voz`, {

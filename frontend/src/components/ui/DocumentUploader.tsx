@@ -3,7 +3,7 @@
 import { ChangeEvent, DragEvent, useRef, useState } from "react";
 import { extractDocumentData, ExtractionResult } from "@/lib/api";
 
-// ─── Iconos inline ────────────────────────────────────────────────────────────
+
 
 const IconUpload = () => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -41,7 +41,7 @@ const IconClose = () => (
   </svg>
 );
 
-// ─── Etiquetas legibles de los campos ─────────────────────────────────────────
+
 
 const FIELD_LABELS: Record<string, string> = {
   edad: "Edad",
@@ -61,18 +61,18 @@ const FIELD_LABELS: Record<string, string> = {
   jadeo: "Jadeo",
 };
 
-// ─── Tipos ────────────────────────────────────────────────────────────────────
+
 
 export type ExtractedFormData = Partial<Record<string, string | number | boolean | null>>;
 
 type Props = {
-  /** Callback fired when extraction succeeds. Receives the extracted fields (nulls excluded). */
+  /** Callback que se ejecuta cuando la extracción es exitosa. Recibe los campos extraídos (sin valores nulos). */
   onExtracted: (data: ExtractedFormData, missingFields: string[]) => void;
 };
 
 type UploadState = "idle" | "selected" | "loading" | "success" | "error";
 
-// ─── Componente ───────────────────────────────────────────────────────────────
+
 
 export function DocumentUploader({ onExtracted }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -82,7 +82,7 @@ export function DocumentUploader({ onExtracted }: Props) {
   const [result, setResult] = useState<ExtractionResult | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  // ── File selection ──────────────────────────────────────────────────────────
+
 
   function handleFileChange(e: ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -99,7 +99,7 @@ export function DocumentUploader({ onExtracted }: Props) {
   }
 
   function selectFile(file: File) {
-    // Reset previous results
+    // Reiniciar resultados previos
     setResult(null);
     setErrorMsg(null);
     setSelectedFile(file);
@@ -114,7 +114,7 @@ export function DocumentUploader({ onExtracted }: Props) {
     if (inputRef.current) inputRef.current.value = "";
   }
 
-  // ── Upload & extraction ─────────────────────────────────────────────────────
+
 
   async function handleExtract() {
     if (!selectedFile) return;
@@ -126,7 +126,7 @@ export function DocumentUploader({ onExtracted }: Props) {
       const data = await extractDocumentData(selectedFile);
       setResult(data);
       setState("success");
-      // Pass only non-null values to parent
+      // Pasar solo valores no nulos al padre
       const cleanData: ExtractedFormData = {};
       for (const [key, val] of Object.entries(data.data)) {
         if (val !== null && val !== undefined) cleanData[key] = val;
@@ -138,7 +138,7 @@ export function DocumentUploader({ onExtracted }: Props) {
     }
   }
 
-  // ── Render helpers ──────────────────────────────────────────────────────────
+
 
   const isLoading = state === "loading";
   const hasFile = selectedFile !== null;
@@ -156,7 +156,6 @@ export function DocumentUploader({ onExtracted }: Props) {
 
   return (
     <div className="space-y-3">
-      {/* ── Drop zone ── */}
       <div
         onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
         onDragLeave={() => setIsDragOver(false)}

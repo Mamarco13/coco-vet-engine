@@ -4,16 +4,14 @@ import { useEffect, useRef, useState } from "react";
 import { extractVoiceData, ExtractionResult } from "@/lib/api";
 import type { ExtractedFormData } from "@/components/ui/DocumentUploader";
 
-// ─── Tipos ─────────────────────────────────────────────────────────────────────
+
 
 type VoiceState = "idle" | "listening" | "processing" | "success" | "error";
 
 type Props = {
-  /** Same callback signature as DocumentUploader so both feed the same handler. */
   onExtracted: (data: ExtractedFormData, missingFields: string[]) => void;
 };
 
-// ─── Web Speech API — interfaces propias (no dependen de lib.dom.d.ts) ─────────
 // Definimos solo lo que usamos para que el build en CI no falle cuando
 // el entorno de TypeScript no incluye SpeechRecognition en sus tipos globales.
 
@@ -63,7 +61,7 @@ declare global {
   }
 }
 
-// ─── Iconos inline ─────────────────────────────────────────────────────────────
+
 
 const IconMic = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -94,7 +92,7 @@ const IconWarning = () => (
   </svg>
 );
 
-// ─── Etiquetas legibles de los campos ──────────────────────────────────────────
+
 
 const FIELD_LABELS: Record<string, string> = {
   edad: "Edad",
@@ -114,7 +112,7 @@ const FIELD_LABELS: Record<string, string> = {
   jadeo: "Jadeo",
 };
 
-// ─── Componente ────────────────────────────────────────────────────────────────
+
 
 export function VoiceRecorder({ onExtracted }: Props) {
   const [state, setState] = useState<VoiceState>("idle");
@@ -125,17 +123,14 @@ export function VoiceRecorder({ onExtracted }: Props) {
   const [browserSupported, setBrowserSupported] = useState(true);
 
   const recognitionRef = useRef<ISpeechRecognition | null>(null);
-  // Ref that mirrors `transcript` state — always has the latest value
-  // synchronously, even inside recognition event callbacks.
   const transcriptRef = useRef("");
 
-  // Check browser support on mount
   useEffect(() => {
     const SR = window.SpeechRecognition ?? window.webkitSpeechRecognition;
     if (!SR) setBrowserSupported(false);
   }, []);
 
-  // ── Start / stop recording ──────────────────────────────────────────────────
+
 
   function startListening() {
     const SR = window.SpeechRecognition ?? window.webkitSpeechRecognition;
@@ -151,7 +146,7 @@ export function VoiceRecorder({ onExtracted }: Props) {
       setState("listening");
       setTranscript("");
       setInterimText("");
-      transcriptRef.current = "";   // reset ref too
+      transcriptRef.current = "";
       setResult(null);
       setErrorMsg(null);
     };
@@ -168,19 +163,20 @@ export function VoiceRecorder({ onExtracted }: Props) {
         }
       }
       if (finalPart) {
-        transcriptRef.current += finalPart;          // sync ref update first
-        setTranscript(transcriptRef.current);         // then React state
+        transcriptRef.current += finalPart;
+        setTranscript(transcriptRef.current);
       }
       setInterimText(interimPart);
     };
 
     recognition.onerror = (event: ISpeechRecognitionErrorEvent) => {
-      if (event.error === "no-speech") return; // ignore silence
+      if (event.error === "no-speech") return;
       setErrorMsg(`Error de reconocimiento: ${event.error}`);
       setState("error");
     };
 
-    // onend fires after stop() — flush any remaining interim text into the ref
+    // onend se dispara después de stop() 
+    // Volcamos el texto
     recognition.onend = () => {
       setInterimText("");
     };
@@ -198,13 +194,12 @@ export function VoiceRecorder({ onExtracted }: Props) {
     const recognition = recognitionRef.current;
 
     if (!recognition) {
-      // Already stopped — just read what we have in the ref
+      // Ya se detuvo, leemos lo que hay en el ref
       processTranscript(transcriptRef.current);
       return;
     }
 
-    // Wait for recognition.onend before reading the final transcript,
-    // so any pending onresult events have time to flush.
+    // Esperamos a onend antes de procesar el texto final
     await new Promise<void>((resolve) => {
       recognition.onend = () => {
         setInterimText("");
@@ -225,7 +220,7 @@ export function VoiceRecorder({ onExtracted }: Props) {
       return;
     }
 
-    // Make sure the displayed transcript matches what we send
+    // Nos aseguramos de que se muestre el texto que vamos a enviar
     setTranscript(finalTranscript);
 
     setState("processing");
@@ -256,7 +251,7 @@ export function VoiceRecorder({ onExtracted }: Props) {
     setErrorMsg(null);
   }
 
-  // ── Render ──────────────────────────────────────────────────────────────────
+
 
   if (!browserSupported) {
     return (

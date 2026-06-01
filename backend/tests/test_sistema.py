@@ -26,9 +26,7 @@ from logicaDifusa.reglas import Rule, FuzzyOperator
 from logicaDifusa.sistema import FuzzySystem
 
 
-# ======================================================
 # HELPERS / FIXTURES
-# ======================================================
 
 def output_riesgo():
     """Variable de salida idéntica a consecuente.json."""
@@ -63,9 +61,7 @@ def output():
     return output_riesgo()
 
 
-# ======================================================
 # TESTS — infer() estructura del resultado
-# ======================================================
 
 class TestInferEstructura:
 
@@ -108,9 +104,7 @@ class TestInferEstructura:
         assert len(result["rules"]) > 0
 
 
-# ======================================================
 # TESTS — _get_label
-# ======================================================
 
 class TestGetLabel:
 
@@ -150,9 +144,7 @@ class TestGetLabel:
         assert etiqueta[0].isupper()
 
 
-# ======================================================
 # TESTS — Confianza compuesta
-# ======================================================
 
 class TestConfianza:
 
@@ -191,9 +183,7 @@ class TestConfianza:
         assert term_activations["muy_alto"] > term_activations["alto"]
 
 
-# ======================================================
 # TESTS — Casos de error
-# ======================================================
 
 class TestErrores:
 

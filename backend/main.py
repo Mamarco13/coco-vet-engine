@@ -10,9 +10,7 @@ from modulos.moduloClinico import ModuloClinico
 from modulos.moduloLaboratorio import ModuloLaboratorio
 
 def main():
-    # =====================================================
     # CONFIGURACIÓN DE ARGUMENTOS DE TERMINAL
-    # =====================================================
     parser = argparse.ArgumentParser(description="Motor C.O.C.O: Predicción de Cushing Canino")
 
     # -- Demográficos
@@ -39,18 +37,14 @@ def main():
     # Parseamos los argumentos introducidos por el usuario
     args = parser.parse_args()
 
-    # =====================================================
     # DATOS DEMOGRÁFICOS
-    # =====================================================
     modulo_demografico = ModuloDemografico(
         edad=args.edad,
         raza=args.raza,
         peso_rel=args.peso
     )
 
-    # =====================================================
     # DATOS CLÍNICOS
-    # =====================================================
     modulo_clinico = ModuloClinico(
         polidipsia=args.polidipsia,
         abdomen_inflamado=args.abdomen_inflamado,
@@ -62,9 +56,7 @@ def main():
         jadeo=args.jadeo
     )
 
-    # =====================================================
     # DATOS LABORATORIO
-    # =====================================================
     modulo_laboratorio = ModuloLaboratorio(
         alp=args.alp,
         alt=args.alt,
@@ -72,9 +64,7 @@ def main():
         colesterol=args.colesterol
     )
 
-    # =====================================================
     # CREACIÓN DEL SISTEMA Y EJECUCIÓN
-    # =====================================================
     predictor = PrediccionCushing(
         moduloDemografico=modulo_demografico,
         moduloClinico=modulo_clinico,
@@ -89,9 +79,7 @@ def main():
     print("\nEjecutando inferencia fuzzy...\n")
     resultados = predictor.predecir()
 
-    # =====================================================
     # RESULTADOS
-    # =====================================================
     print("\n")
     print("=" * 60)
     print("RESULTADO FINAL")

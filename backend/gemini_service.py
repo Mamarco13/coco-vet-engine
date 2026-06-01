@@ -20,9 +20,7 @@ from pydantic import BaseModel, Field
 # Carga las variables de entorno desde backend/.env (si existe)
 load_dotenv()
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Esquema de datos estructurados que Gemini deberá respetar en su respuesta
-# ─────────────────────────────────────────────────────────────────────────────
 
 class ExtractedDocument(BaseModel):
     """Campos clínicos y de laboratorio para el análisis de Cushing canino."""
@@ -82,9 +80,7 @@ class ExtractedDocument(BaseModel):
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Prompt principal
-# ─────────────────────────────────────────────────────────────────────────────
 
 EXTRACTION_PROMPT = """
 Eres un asistente especializado en análisis de documentos veterinarios.
@@ -104,9 +100,7 @@ Instrucciones:
 """
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Función principal de extracción
-# ─────────────────────────────────────────────────────────────────────────────
 
 def extract_document_data(file_bytes: bytes, mime_type: str) -> str:
     """
@@ -141,7 +135,7 @@ def extract_document_data(file_bytes: bytes, mime_type: str) -> str:
         ),
     )
 
-    # Empaqueta el archivo como parte inline (sin subida previa a Files API)
+    # Empaqueta el archivo como parte inline
     document_part = {
         "mime_type": mime_type,
         "data": file_bytes,
@@ -154,9 +148,7 @@ def extract_document_data(file_bytes: bytes, mime_type: str) -> str:
         raise RuntimeError(f"Error al llamar a la API de Gemini: {exc}") from exc
 
 
-# ─────────────────────────────────────────────────────────────────────────────
 # Prompt para transcripciones de voz
-# ─────────────────────────────────────────────────────────────────────────────
 
 VOICE_PROMPT = """
 Eres un asistente especializado en veterinaria clínica canina.
@@ -266,9 +258,7 @@ def extract_voice_data(transcript: str) -> str:
         raise RuntimeError(f"Error al llamar a la API de Gemini: {exc}") from exc
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Helper: identificar campos null (usada por el endpoint de la API)
-# ─────────────────────────────────────────────────────────────────────────────
+# Identificar campos null
 
 def get_missing_fields(extracted_json: str) -> list[str]:
     """
