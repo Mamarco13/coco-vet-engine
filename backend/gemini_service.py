@@ -9,8 +9,6 @@ Los campos no encontrados se retornan como null.
 
 import json
 import os
-from typing import Optional
-
 import google.generativeai as genai
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field
@@ -26,16 +24,13 @@ class ExtractedDocument(BaseModel):
     """Campos clínicos y de laboratorio para el análisis de Cushing canino."""
 
     # Demográficos
-    edad: Optional[float] = Field(
-        None,
+    edad: float | None = Field(
         description="Edad del animal en años (ej: 8.5). Null si no se menciona."
     )
-    raza: Optional[str] = Field(
-        None,
+    raza: str | None = Field(
         description="Raza del perro en texto libre (ej: 'Golden Retriever'). Null si no se menciona."
     )
-    peso: Optional[float] = Field(
-        None,
+    peso: float | None = Field(
         description=(
             "Peso relativo del animal en porcentaje respecto a la media de su raza (ej: 120). "
             "Si el documento indica el peso en kg pero no el porcentaje, retorna null."
@@ -43,54 +38,42 @@ class ExtractedDocument(BaseModel):
     )
 
     # Laboratorio
-    alp: Optional[float] = Field(
-        None,
+    alp: float | None = Field(
         description="Fosfatasa Alcalina (ALP/FA) en U/L. Null si no aparece."
     )
-    alt: Optional[float] = Field(
-        None,
+    alt: float | None = Field(
         description="Alanina Aminotransferasa (ALT/GPT) en U/L. Null si no aparece."
     )
-    usg: Optional[float] = Field(
-        None,
+    usg: float | None = Field(
         description="Gravedad Específica de la Orina (USG/densidad orina). Null si no aparece."
     )
-    colesterol: Optional[float] = Field(
-        None,
+    colesterol: float | None = Field(
         description="Colesterol total en mg/dL. Null si no aparece."
     )
 
     # Signos clínicos (presencia = true, ausencia = false, no mencionado = null)
-    polidipsia: Optional[bool] = Field(
-        None,
+    polidipsia: bool | None = Field(
         description="Polidipsia (bebe más agua de lo habitual). Null si no se menciona."
     )
-    abdomen_inflamado: Optional[bool] = Field(
-        None,
+    abdomen_inflamado: bool | None = Field(
         description="Distensión o abdomen inflamado. Null si no se menciona."
     )
-    alopecia: Optional[bool] = Field(
-        None,
+    alopecia: bool | None = Field(
         description="Alopecia o pérdida de pelo. Null si no se menciona."
     )
-    polifagia: Optional[bool] = Field(
-        None,
+    polifagia: bool | None = Field(
         description="Polifagia (apetito excesivo). Null si no se menciona."
     )
-    poliuria: Optional[bool] = Field(
-        None,
+    poliuria: bool | None = Field(
         description="Poliuria (orina en mayor cantidad). Null si no se menciona."
     )
-    debilidad: Optional[bool] = Field(
-        None,
+    debilidad: bool | None = Field(
         description="Debilidad muscular o dificultad para moverse. Null si no se menciona."
     )
-    piel_fina: Optional[bool] = Field(
-        None,
+    piel_fina: bool | None = Field(
         description="Piel fina, frágil o con hematomas. Null si no se menciona."
     )
-    jadeo: Optional[bool] = Field(
-        None,
+    jadeo: bool | None = Field(
         description="Jadeo constante sin esfuerzo aparente. Null si no se menciona."
     )
 
@@ -146,7 +129,7 @@ def extract_document_data(file_bytes: bytes, mime_type: str) -> str:
     genai.configure(api_key=api_key)
 
     model = genai.GenerativeModel(
-        model_name="gemini-1.5-flash",
+        model_name="gemini-2.0-flash",
         generation_config=genai.GenerationConfig(
             response_mime_type="application/json",
             response_schema=ExtractedDocument,

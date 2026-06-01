@@ -62,14 +62,14 @@ const initialForm: CushingFormState = {
 };
 
 const CLINICAL_SIGNS: Array<{ key: ClinicalKey; label: string; desc: string }> = [
-  { key: "polidipsia",       label: "Polidipsia",         desc: "Bebe más agua de lo habitual" },
-  { key: "abdomen_inflamado",label: "Abdomen inflamado",  desc: "Distensión abdominal visible" },
-  { key: "alopecia",         label: "Alopecia",           desc: "Pérdida de pelo simétrica" },
-  { key: "polifagia",        label: "Polifagia",          desc: "Apetito excesivo constante" },
-  { key: "poliuria",         label: "Poliuria",           desc: "Orina en mayor cantidad" },
-  { key: "debilidad",        label: "Debilidad muscular", desc: "Dificultad para levantarse o moverse" },
-  { key: "piel_fina",        label: "Piel fina",          desc: "Piel frágil o con hematomas" },
-  { key: "jadeo",            label: "Jadeo",              desc: "Respiración jadeante sin esfuerzo" },
+  { key: "polidipsia", label: "Polidipsia", desc: "Bebe más agua de lo habitual" },
+  { key: "abdomen_inflamado", label: "Abdomen inflamado", desc: "Distensión abdominal visible" },
+  { key: "alopecia", label: "Alopecia", desc: "Pérdida de pelo simétrica" },
+  { key: "polifagia", label: "Polifagia", desc: "Apetito excesivo constante" },
+  { key: "poliuria", label: "Poliuria", desc: "Orina en mayor cantidad" },
+  { key: "debilidad", label: "Debilidad muscular", desc: "Dificultad para levantarse o moverse" },
+  { key: "piel_fina", label: "Piel fina", desc: "Piel frágil o con hematomas" },
+  { key: "jadeo", label: "Jadeo", desc: "Respiración jadeante sin esfuerzo" },
 ];
 
 /* ─── Estilos reutilizables ──────────────────────────────────────────────── */
@@ -212,7 +212,7 @@ export default function AnalyzePage() {
             {/* ── Carga de documento con IA ── */}
             <div className="space-y-3">
               <p className={sectionHeadCls}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" /></svg>
                 Extracción automática con IA
               </p>
               <DocumentUploader onExtracted={handleDocumentExtracted} />
@@ -229,7 +229,7 @@ export default function AnalyzePage() {
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-black/5 bg-[var(--accent)]/5 px-5 py-4">
               <div>
                 <p className={sectionHeadCls}>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 8v4m0 4h.01" /></svg>
                   Enfermedad
                 </p>
                 <p className="mt-1 text-sm font-semibold text-[var(--foreground)]">Selección actual</p>
@@ -250,7 +250,7 @@ export default function AnalyzePage() {
             {/* ── Datos demográficos ── */}
             <div className="space-y-4">
               <p className={sectionHeadCls}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>
                 Datos demográficos
               </p>
               <div className="grid gap-4 md:grid-cols-3">
@@ -301,7 +301,7 @@ export default function AnalyzePage() {
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <p className={sectionHeadCls}>
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></svg>
                   Signos clínicos
                 </p>
                 {activeSignsCount > 0 && (
@@ -354,7 +354,7 @@ export default function AnalyzePage() {
             {/* ── Laboratorio ── */}
             <div className="space-y-4">
               <p className={sectionHeadCls}>
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18" /></svg>
                 Laboratorio
               </p>
               <div className="grid gap-4 md:grid-cols-2">
@@ -412,7 +412,7 @@ export default function AnalyzePage() {
             {/* Error */}
             {error && (
               <div className="flex items-center gap-2.5 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e11d48" strokeWidth="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 8v4m0 4h.01"/></svg>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#e11d48" strokeWidth="2" aria-hidden="true"><circle cx="12" cy="12" r="10" /><path d="M12 8v4m0 4h.01" /></svg>
                 <p className="text-sm font-medium text-rose-700" role="alert">
                   {error}
                 </p>
@@ -486,29 +486,11 @@ export default function AnalyzePage() {
               El motor difuso procesa los parámetros localmente y genera un reporte inmediato.
             </p>
           </Card>
-
-          {/* Nota sobre signos */}
-          {activeSignsCount === 0 && (
-            <Card
-              className="space-y-2"
-              style={{
-                background: "linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%)",
-                borderColor: "#fde68a",
-              } as React.CSSProperties}
-            >
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">
-                Sugerencia
-              </p>
-              <p className="text-sm text-amber-900">
-                Marca los signos clínicos observados para obtener resultados más precisos.
-              </p>
-            </Card>
-          )}
         </div>
       </div>
 
       {/* Modal de progreso */}
-      <Modal open={isAnalyzing} onClose={() => {}} dismissible={false} title="Analizando…">
+      <Modal open={isAnalyzing} onClose={() => { }} dismissible={false} title="Analizando…">
         <div className="space-y-4">
           <Loader label="Procesando parámetros" />
           <ProgressBar value={progress} max={100} />
