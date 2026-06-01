@@ -13,6 +13,10 @@ const nextConfig: NextConfig = {
   basePath: isProd ? `/${repoName}` : "",
   assetPrefix: isProd ? `/${repoName}/` : "",
 
+  // Esencial para GitHub Pages: genera carpetas con index.html (ej. /analyze/index.html)
+  // para que las rutas directas funcionen sin devolver 404.
+  trailingSlash: true,
+
   // GitHub Pages no puede optimizar imágenes en el servidor
   images: {
     unoptimized: true,
