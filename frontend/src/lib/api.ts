@@ -125,3 +125,39 @@ export async function analyzeCushing(params: {
 export function buildMockResult(diseaseId: string) {
   return buildResult(diseaseId, 0.56);
 }
+
+// ─── Document Extraction ──────────────────────────────────────────────────────
+
+export type ExtractionResult = {
+  ok: boolean;
+  /** Partial form fields extracted from the document (null values omitted). */
+  data: Partial<Record<string, string | number | boolean | null>>;
+  /** List of field names Gemini could not find in the document. */
+  missing_fields: string[];
+  extracted_count: number;
+  total_fields: number;
+};
+
+/**
+ * Uploads a document file to the backend and returns the fields
+ * that Gemini was able to extract from it.
+ */
+export async function extractDocumentData(file: File): Promise<ExtractionResult> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const response = await fetch(`${API_BASE}/api/extraer-documento`, {
+    method: "POST",
+    body: formData,
+    // Do NOT set Content-Type manually — the browser adds the correct
+    // multipart/form-data boundary automatically.
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.json().catch(() => null);
+    const detail = errorBody?.detail ?? `Error ${response.status}`;
+    throw new Error(detail);
+  }
+
+  return response.json() as Promise<ExtractionResult>;
+}

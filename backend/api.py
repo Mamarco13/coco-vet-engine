@@ -1,13 +1,20 @@
-from fastapi import FastAPI
+import json
+
+from dotenv import load_dotenv
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from fastapi.encoders import jsonable_encoder
+from pydantic import BaseModel
 import numpy as np
 
 from modulos.moduloDemografico import ModuloDemografico
 from modulos.moduloClinico import ModuloClinico
 from modulos.moduloLaboratorio import ModuloLaboratorio
 from sistema.prediccionCushing import PrediccionCushing
+from gemini_service import extract_document_data, get_missing_fields
+
+# Carga las variables de entorno desde backend/.env
+load_dotenv()
 
 app = FastAPI(title="C.O.C.O API")
 
@@ -66,6 +73,66 @@ def serialize_result(result):
             if isinstance(result.get("aggregated"), np.ndarray)
             else result.get("aggregated")
         ),
+    }
+
+
+# ─── Tipos MIME permitidos para la extracción de documentos ───────────────────
+ALLOWED_MIME_TYPES = {
+    "application/pdf",
+    "text/csv",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",  # .xlsx
+    "application/vnd.ms-excel",  # .xls
+}
+
+
+@app.post("/api/extraer-documento")
+async def extraer_documento(file: UploadFile = File(...)):
+    """
+    Recibe un documento (PDF, CSV o Excel), lo envía a Gemini y retorna
+    los campos clínicos extraídos junto con la lista de campos no encontrados.
+    """
+    # Validación de tipo de archivo
+    content_type = file.content_type or ""
+    if content_type not in ALLOWED_MIME_TYPES:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                f"Tipo de archivo no permitido: '{content_type}'. "
+                "Solo se aceptan PDF, CSV o Excel (.xlsx / .xls)."
+            ),
+        )
+
+    # Lectura del contenido binario
+    file_bytes = await file.read()
+
+    # Llamada al servicio de Gemini
+    try:
+        raw_json = extract_document_data(file_bytes, content_type)
+    except ValueError as exc:
+        # API key no configurada
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except RuntimeError as exc:
+        # Error de la API de Gemini
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+
+    # Parsear el JSON devuelto por Gemini
+    try:
+        extracted_data = json.loads(raw_json)
+    except json.JSONDecodeError as exc:
+        raise HTTPException(
+            status_code=502,
+            detail="La IA devolvió una respuesta con formato inválido.",
+        ) from exc
+
+    # Identificar campos que Gemini no pudo extraer (valor null)
+    missing_fields = get_missing_fields(raw_json)
+
+    return {
+        "ok": True,
+        "data": extracted_data,
+        "missing_fields": missing_fields,
+        "extracted_count": len(extracted_data) - len(missing_fields),
+        "total_fields": len(extracted_data),
     }
 
 

@@ -12,6 +12,8 @@ import { DiseaseBadge } from "@/components/ui/DiseaseBadge";
 import { Loader } from "@/components/ui/Loader";
 import { Modal } from "@/components/ui/Modal";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { DocumentUploader } from "@/components/ui/DocumentUploader";
+import type { ExtractedFormData } from "@/components/ui/DocumentUploader";
 
 type CushingFormState = {
   edad: string;
@@ -70,9 +72,12 @@ const CLINICAL_SIGNS: Array<{ key: ClinicalKey; label: string; desc: string }> =
   { key: "jadeo",            label: "Jadeo",              desc: "Respiración jadeante sin esfuerzo" },
 ];
 
-/* ─── Estilos reutilizables ─────────────────────────────────── */
+/* ─── Estilos reutilizables ──────────────────────────────────────────────── */
 const inputCls =
   "w-full rounded-2xl border border-black/10 bg-white/80 px-4 py-2.5 text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/40 transition";
+
+const inputMissingCls =
+  "w-full rounded-2xl border-2 border-amber-300 bg-amber-50/60 px-4 py-2.5 text-sm text-[var(--foreground)] placeholder:text-[var(--muted)] focus:outline-none focus:ring-2 focus:ring-amber-400/40 transition";
 
 const labelCls = "block text-xs font-semibold uppercase tracking-[0.2em] text-[var(--muted)] mb-1.5";
 
@@ -86,6 +91,28 @@ export default function AnalyzePage() {
   const [error, setError] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [missingFields, setMissingFields] = useState<string[]>([]);
+
+  /** Merges Gemini-extracted fields into the current form state */
+  const handleDocumentExtracted = (data: ExtractedFormData, missing: string[]) => {
+    setMissingFields(missing);
+    setForm((prev) => {
+      const next = { ...prev };
+      for (const [key, value] of Object.entries(data)) {
+        if (value === null || value === undefined) continue;
+        if (key in prev) {
+          // Booleans stay as booleans; numbers/strings become strings for inputs
+          (next as Record<string, unknown>)[key] =
+            typeof value === "boolean" ? value : String(value);
+        }
+      }
+      return next;
+    });
+  };
+
+  /** Returns the appropriate input CSS class, highlighting missing fields */
+  const cls = (field: string) =>
+    missingFields.includes(field) ? inputMissingCls : inputCls;
 
   const handleText = (key: keyof CushingFormState) => {
     return (event: ChangeEvent<HTMLInputElement>) => {
@@ -182,6 +209,22 @@ export default function AnalyzePage() {
 
           <Card className="space-y-8">
 
+            {/* ── Carga de documento con IA ── */}
+            <div className="space-y-3">
+              <p className={sectionHeadCls}>
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                Extracción automática con IA
+              </p>
+              <DocumentUploader onExtracted={handleDocumentExtracted} />
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center gap-3">
+              <div className="h-px flex-1 bg-black/6" />
+              <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[var(--muted)]">o introduce los datos manualmente</p>
+              <div className="h-px flex-1 bg-black/6" />
+            </div>
+
             {/* ── Selector de enfermedad ── */}
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-black/5 bg-[var(--accent)]/5 px-5 py-4">
               <div>
@@ -220,7 +263,7 @@ export default function AnalyzePage() {
                     value={form.edad}
                     onChange={handleText("edad")}
                     placeholder="Ej: 8"
-                    className={inputCls}
+                    className={cls("edad")}
                   />
                   <p className="mt-1 text-[11px] text-[var(--muted)]">Edad aproximada en años decimales</p>
                 </div>
@@ -231,7 +274,7 @@ export default function AnalyzePage() {
                     value={form.raza}
                     onChange={handleText("raza")}
                     placeholder="Ej: Golden Retriever"
-                    className={inputCls}
+                    className={cls("raza")}
                   />
                   <p className="mt-1 text-[11px] text-[var(--muted)]">Raza del animal evaluado</p>
                 </div>
@@ -244,7 +287,7 @@ export default function AnalyzePage() {
                     value={form.peso}
                     onChange={handleText("peso")}
                     placeholder="Ej: 120"
-                    className={inputCls}
+                    className={cls("peso")}
                   />
                   <p className="mt-1 text-[11px] text-[var(--muted)]">% respecto a la media de su raza</p>
                 </div>
@@ -324,7 +367,7 @@ export default function AnalyzePage() {
                     value={form.alp}
                     onChange={handleText("alp")}
                     placeholder="Ej: 350"
-                    className={inputCls}
+                    className={cls("alp")}
                   />
                 </div>
                 <div>
@@ -336,7 +379,7 @@ export default function AnalyzePage() {
                     value={form.alt}
                     onChange={handleText("alt")}
                     placeholder="Ej: 80"
-                    className={inputCls}
+                    className={cls("alt")}
                   />
                 </div>
                 <div>
@@ -348,7 +391,7 @@ export default function AnalyzePage() {
                     value={form.usg}
                     onChange={handleText("usg")}
                     placeholder="Ej: 1.008"
-                    className={inputCls}
+                    className={cls("usg")}
                   />
                 </div>
                 <div>
@@ -360,7 +403,7 @@ export default function AnalyzePage() {
                     value={form.colesterol}
                     onChange={handleText("colesterol")}
                     placeholder="Ej: 320"
-                    className={inputCls}
+                    className={cls("colesterol")}
                   />
                 </div>
               </div>
