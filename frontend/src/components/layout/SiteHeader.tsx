@@ -23,6 +23,15 @@ export function SiteHeader() {
           <Link href="/results" prefetch={false}>Resultados</Link>
         </nav>
         <div className="flex items-center gap-3">
+          <a
+            href="https://github.com/Mamarco13/coco-vet-engine"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Ver repositorio en GitHub"
+            className="flex h-9 w-9 items-center justify-center rounded-xl border border-black/10 bg-white/70 text-[var(--foreground)] shadow-[0_4px_12px_rgba(15,30,30,0.08)] transition hover:bg-white hover:shadow-[0_8px_20px_rgba(15,30,30,0.14)]"
+          >
+            <Image src="/github_logo.png" alt="GitHub" width={18} height={18} />
+          </a>
           <ButtonLink href="/analyze" size="sm">
             Analizar perro
           </ButtonLink>

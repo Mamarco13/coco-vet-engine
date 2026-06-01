@@ -3,10 +3,8 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { diseases } from "@/lib/diseases";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { DiseaseBadge } from "@/components/ui/DiseaseBadge";
 import { Modal } from "@/components/ui/Modal";
 
 const heroHighlights = [
@@ -83,7 +81,6 @@ const benefits = [
 ];
 
 export default function Home() {
-  const disease = diseases[0];
   const [openModal, setOpenModal] = useState(false);
 
   return (
@@ -93,78 +90,64 @@ export default function Home() {
         <div className="pointer-events-none absolute -right-40 -top-24 h-96 w-96 rounded-full bg-[radial-gradient(circle,_rgba(247,215,170,0.45),_transparent_70%)]" />
         <div className="pointer-events-none absolute inset-x-0 top-0 h-40 bg-[linear-gradient(180deg,_rgba(255,255,255,0.7),_transparent)]" />
         <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-12 px-6 pt-12 lg:grid lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="space-y-6"
-        >
-          <div className="flex flex-wrap items-center gap-3">
-            <DiseaseBadge label={disease.name} />
-            <span className="rounded-full border border-black/10 bg-white/70 px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-[var(--foreground)]">
-              Codigo abierto
-            </span>
-          </div>
-          <h1 className="text-balance font-display text-4xl font-semibold text-[var(--foreground)] sm:text-5xl lg:text-6xl">
-            Plataforma abierta para predecir y prevenir enfermedades con logica
-            difusa aplicada a la evidencia cientifica.
-          </h1>
-          <p className="max-w-xl text-base text-[var(--muted)] sm:text-lg">
-            COCO es un framework extensible: empezamos con Cushing, pero esta hecho
-            para sumar nuevas patologias, equipos clinicos y comunidades de
-            investigacion.
-          </p>
-          <div className="flex flex-wrap items-center gap-4">
-            <ButtonLink href="/analyze" size="lg">
-              Analizar caso
-            </ButtonLink>
-            <Button variant="secondary" size="lg" onClick={() => setOpenModal(true)}>
-              Ver metodologia
-            </Button>
-          </div>
-          <div className="grid gap-3 sm:grid-cols-3">
-            {heroHighlights.map((item) => (
-              <div
-                key={item.label}
-                className="rounded-2xl border border-white/60 bg-white/80 px-4 py-3 text-xs shadow-[0_12px_30px_rgba(15,30,30,0.12)]"
-              >
-                <p className="text-[0.6rem] uppercase tracking-[0.3em] text-[var(--muted)]">
-                  {item.label}
-                </p>
-                <p className="mt-2 text-sm font-semibold text-[var(--foreground)]">
-                  {item.value}
-                </p>
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-[var(--muted)]">
-            Esta herramienta no sustituye la opinion de un profesional.
-          </p>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.1 }}
-          className="relative"
-        >
-          <div className="absolute -left-6 top-6 hidden h-24 w-24 rounded-3xl bg-[var(--accent-2)] lg:block" />
-          <div className="glass grid-dots relative rounded-[32px] p-4">
-            <Image
-              src="/Coco.jpeg"
-              alt="Perro en revision"
-              width={480}
-              height={520}
-              priority
-              className="h-[420px] w-full rounded-[24px] object-cover"
-            />
-          </div>
-          <div className="absolute -right-4 top-10 hidden rounded-3xl border border-white/70 bg-white/80 px-5 py-4 text-xs shadow-[0_16px_40px_rgba(15,30,30,0.16)] lg:block">
-            <p className="uppercase tracking-[0.3em] text-[var(--muted)]">Comunidad</p>
-            <p className="mt-2 text-sm font-semibold text-[var(--foreground)]">
-              Extensible por diseno
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="space-y-6"
+          >
+            <h1 className="text-balance font-display text-4xl font-semibold text-[var(--foreground)] sm:text-5xl lg:text-6xl">
+              Plataforma abierta para predecir y prevenir enfermedades con logica
+              difusa aplicada a la evidencia cientifica.
+            </h1>
+            <p className="max-w-xl text-base text-[var(--muted)] sm:text-lg">
+              COCO es un framework veterinario con logica difusa que está diseñado para sumar nuevas patologías, equipos clínicos y comunidades de investigación.
             </p>
-          </div>
-        </motion.div>
+            <div className="flex flex-wrap items-center gap-4">
+              <ButtonLink href="/analyze" size="lg">
+                Analizar caso
+              </ButtonLink>
+              <Button variant="secondary" size="lg" onClick={() => setOpenModal(true)}>
+                Ver metodologia
+              </Button>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-3">
+              {heroHighlights.map((item) => (
+                <div
+                  key={item.label}
+                  className="rounded-2xl border border-white/60 bg-white/80 px-4 py-3 text-xs shadow-[0_12px_30px_rgba(15,30,30,0.12)]"
+                >
+                  <p className="text-[0.6rem] uppercase tracking-[0.3em] text-[var(--muted)]">
+                    {item.label}
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-[var(--foreground)]">
+                    {item.value}
+                  </p>
+                </div>
+              ))}
+            </div>
+            <p className="text-xs text-[var(--muted)]">
+              Esta herramienta no sustituye la opinion de un profesional.
+            </p>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1 }}
+            className="relative"
+          >
+            <div className="absolute -left-6 top-6 hidden h-24 w-24 rounded-3xl bg-[var(--accent-2)] lg:block" />
+            <div className="glass grid-dots relative rounded-[32px] p-4">
+              <Image
+                src="/Coco.jpeg"
+                alt="Perro en revision"
+                width={480}
+                height={520}
+                priority
+                className="h-[420px] w-full rounded-[24px] object-cover"
+              />
+            </div>
+          </motion.div>
         </div>
       </section>
 
@@ -196,11 +179,10 @@ export default function Home() {
               Metodologia
             </p>
             <h2 className="font-display text-3xl font-semibold text-[var(--foreground)]">
-              De la evidencia clinica a una prediccion explicable.
+              De la evidencia clínica a una predicción explicable.
             </h2>
             <p className="text-sm text-[var(--muted)]">
-              Cada etapa esta pensada para aportar claridad y trazabilidad, desde la
-              literatura cientifica hasta el reporte final.
+              Cada etapa está pensada para aportar claridad y trazabilidad, desde la literatura científica hasta el reporte final.
             </p>
           </div>
           <div className="grid gap-4">
@@ -222,36 +204,75 @@ export default function Home() {
       </section>
 
       <section className="mx-auto mt-20 w-full max-w-6xl px-6">
-        <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-          <Card className="space-y-4">
+        <div className="space-y-10">
+          <div className="space-y-3">
+            <p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">Comunidad</p>
             <h2 className="font-display text-3xl font-semibold text-[var(--foreground)]">
-              Cushing hoy, mas enfermedades manana.
+              C.O.C.O es de todos
             </h2>
-            <p className="text-sm text-[var(--muted)]">{disease.description}</p>
-            <div className="grid gap-3 text-sm text-[var(--muted)]">
-              {benefits.map((benefit) => (
-                <div key={benefit} className="flex items-center gap-3">
-                  <span className="h-2 w-2 rounded-full bg-[var(--accent)]" />
-                  <span>{benefit}</span>
+            <p className="max-w-2xl text-sm text-[var(--muted)]">
+              Es muy fácil ser partícipe de C.O.C.O y añadir tu propio predictor.
+              El motor está diseñado para extenderse sin rehacer la arquitectura.
+            </p>
+          </div>
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Paso 1 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0 }}
+            >
+              <Card className="h-full space-y-3">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-[var(--accent-2)] text-sm font-semibold text-[var(--foreground)]">01</span>
+                  <h3 className="text-base font-semibold text-[var(--foreground)]">Añadir una variable</h3>
                 </div>
-              ))}
-            </div>
-          </Card>
-          <div className="relative">
-            <div className="glass absolute -left-6 -top-6 hidden h-24 w-24 rounded-3xl lg:block" />
-            <div className="glass rounded-[32px] p-6">
-              <Image src="/pata.png" alt="Icono pata" width={64} height={64} />
-              <h3 className="mt-6 text-lg font-semibold text-[var(--foreground)]">
-                Plataforma modular por capas
-              </h3>
-              <p className="mt-2 text-sm text-[var(--muted)]">
-                Disenada para sumar variables clinicas, reglas y paquetes de
-                patologias sin perder consistencia en la experiencia.
-              </p>
-              <ButtonLink href="/analyze" className="mt-6">
-                Comenzar analisis
-              </ButtonLink>
-            </div>
+                <ul className="space-y-1 text-sm text-[var(--muted)]">
+                  <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--accent)]" />Declara la variable en un JSON dentro de variables/</li>
+                  <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--accent)]" />El nombre debe coincidir con la clave que usan las reglas</li>
+                  <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--accent)]" />Actualiza la función de predicción para incluir el valor en los inputs</li>
+                </ul>
+              </Card>
+            </motion.div>
+            {/* Paso 2 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+            >
+              <Card className="h-full space-y-3">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-[var(--accent-2)] text-sm font-semibold text-[var(--foreground)]">02</span>
+                  <h3 className="text-base font-semibold text-[var(--foreground)]">Añadir reglas</h3>
+                </div>
+                <ul className="space-y-1 text-sm text-[var(--muted)]">
+                  <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--accent)]" />Crea o edita un JSON en reglas/</li>
+                  <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--accent)]" />Usa términos definidos en las variables</li>
+                  <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--accent)]" />Ajusta el campo peso para priorizar o despriorizar la regla</li>
+                </ul>
+              </Card>
+            </motion.div>
+            {/* Paso 3 */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+            >
+              <Card className="h-full space-y-3">
+                <div className="flex items-center gap-3">
+                  <span className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-2xl bg-[var(--accent-2)] text-sm font-semibold text-[var(--foreground)]">03</span>
+                  <h3 className="text-base font-semibold text-[var(--foreground)]">Crear un predictor nuevo</h3>
+                </div>
+                <ul className="space-y-1 text-sm text-[var(--muted)]">
+                  <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--accent)]" />Crea la carpeta backend/conocimiento/patologia/</li>
+                  <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--accent)]" />Añade metadata.json, variables/ y reglas/</li>
+                  <li className="flex gap-2"><span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[var(--accent)]" />Implementa la clase de predicción y mapea las entradas</li>
+                </ul>
+              </Card>
+            </motion.div>
           </div>
         </div>
       </section>
