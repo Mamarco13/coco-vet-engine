@@ -169,13 +169,13 @@ export function DocumentUploader({ onExtracted }: Props) {
           borderColor: isDragOver
             ? "var(--accent)"
             : hasFile
-            ? "rgba(13,139,141,0.35)"
-            : "rgba(0,0,0,0.1)",
+              ? "rgba(13,139,141,0.35)"
+              : "rgba(0,0,0,0.1)",
           background: isDragOver
             ? "rgba(13,139,141,0.05)"
             : hasFile
-            ? "linear-gradient(135deg, rgba(13,139,141,0.04) 0%, rgba(13,139,141,0.01) 100%)"
-            : "rgba(255,255,255,0.7)",
+              ? "linear-gradient(135deg, rgba(13,139,141,0.04) 0%, rgba(13,139,141,0.01) 100%)"
+              : "rgba(255,255,255,0.7)",
           cursor: hasFile ? "default" : "pointer",
           borderStyle: hasFile ? "solid" : "dashed",
         }}
@@ -348,7 +348,7 @@ export function DocumentUploader({ onExtracted }: Props) {
 
       {/* Privacy notice */}
       <p className="text-[10px] leading-relaxed text-[var(--muted)]">
-        ⚠️ El documento se procesa con la capa gratuita de Google AI Studio. No incluyas datos
+        El documento se procesa con la capa gratuita de Google AI Studio. No incluyas datos
         personales identificables. Los documentos pueden usarse de forma anónima para mejorar el
         modelo.
       </p>

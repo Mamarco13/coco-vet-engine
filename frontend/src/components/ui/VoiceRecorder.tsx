@@ -242,15 +242,15 @@ export function VoiceRecorder({ onExtracted }: Props) {
           borderColor: isListening
             ? "var(--accent)"
             : state === "success"
-            ? "rgba(16,185,129,0.4)"
-            : state === "error"
-            ? "rgba(239,68,68,0.35)"
-            : "rgba(0,0,0,0.1)",
+              ? "rgba(16,185,129,0.4)"
+              : state === "error"
+                ? "rgba(239,68,68,0.35)"
+                : "rgba(0,0,0,0.1)",
           background: isListening
             ? "rgba(13,139,141,0.04)"
             : state === "success"
-            ? "linear-gradient(135deg, rgba(16,185,129,0.05) 0%, rgba(16,185,129,0.02) 100%)"
-            : "rgba(255,255,255,0.7)",
+              ? "linear-gradient(135deg, rgba(16,185,129,0.05) 0%, rgba(16,185,129,0.02) 100%)"
+              : "rgba(255,255,255,0.7)",
           borderStyle: isListening ? "solid" : "dashed",
         }}
       >
@@ -270,13 +270,13 @@ export function VoiceRecorder({ onExtracted }: Props) {
                 background: isListening
                   ? "var(--accent)"
                   : state === "success"
-                  ? "rgba(16,185,129,0.15)"
-                  : "rgba(13,139,141,0.1)",
+                    ? "rgba(16,185,129,0.15)"
+                    : "rgba(13,139,141,0.1)",
                 color: isListening
                   ? "white"
                   : state === "success"
-                  ? "#059669"
-                  : "var(--accent)",
+                    ? "#059669"
+                    : "var(--accent)",
               }}
             >
               <IconMic />
@@ -455,7 +455,7 @@ export function VoiceRecorder({ onExtracted }: Props) {
 
       {/* Aviso de privacidad */}
       <p className="text-[10px] leading-relaxed text-[var(--muted)]">
-        🎙️ La transcripción se realiza localmente en tu navegador. El texto se envía a la API de
+        La transcripción se realiza localmente en tu navegador. El texto se envía a la API de
         Gemini para interpretar los campos clínicos. No incluyas datos de identificación personal.
       </p>
 

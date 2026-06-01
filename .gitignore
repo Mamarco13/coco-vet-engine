@@ -1,18 +1,23 @@
 venv/
-
-.pytest_cache/
-
-__pycache__
-venv/
 env/
-node_modules/
-frontend/node_modules
-tsconfig.tsbuildinfo
 
 # Caché de Python y Pytest
 __pycache__/
 *.py[cod]
 .pytest_cache/
 
-# Variables de entorno
+# Dependencias JS
+node_modules/
+frontend/node_modules/
+
+# Build de Next.js (exportación estática para GitHub Pages)
+frontend/.next/
+frontend/out/
+tsconfig.tsbuildinfo
+frontend/tsconfig.tsbuildinfo
+
+# Variables de entorno — NUNCA subir a git
 .env
+.env.local
+.env.production
+.env*.local
