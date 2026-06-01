@@ -7,6 +7,8 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Modal } from "@/components/ui/Modal";
 
+import cocoImg from "../../../public/Coco.jpeg";
+
 const heroHighlights = [
   {
     label: "Codigo abierto",
@@ -139,7 +141,7 @@ export default function Home() {
             <div className="absolute -left-6 top-6 hidden h-24 w-24 rounded-3xl bg-[var(--accent-2)] lg:block" />
             <div className="glass grid-dots relative rounded-[32px] p-4">
               <Image
-                src="/Coco.jpeg"
+                src={cocoImg}
                 alt="Perro en revision"
                 width={480}
                 height={520}
