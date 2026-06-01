@@ -13,7 +13,7 @@ from modulos.moduloLaboratorio import ModuloLaboratorio
 from sistema.prediccionCushing import PrediccionCushing
 from gemini_service import extract_document_data, extract_voice_data, get_missing_fields
 
-# Carga las variables de entorno desde backend/.env
+
 load_dotenv()
 
 app = FastAPI(title="C.O.C.O API")
@@ -23,7 +23,6 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "http://127.0.0.1:3000",
-        # GitHub Pages — cambia "Mamarco13" y "coco-vet-engine" si es necesario
         "https://mamarco13.github.io",
     ],
     allow_credentials=True,
