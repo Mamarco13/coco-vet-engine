@@ -24,7 +24,7 @@
       "conectiva": "AND",
       "consecuente": {"variable": "riesgo", "termino": "muy_alto"},
       "peso": 2.0,
-      "fuente": "Marin 2010: USG < 1.013 en 100% casos; Boghian 2020: ALP media 378 U/L; MSD: interferencia cortisol-ADH produce hipostenuria"
+      "fuente": "Marin 2010: USG < 1.013 en 100% casos; Boghian 2020: ALP media 378 mg/dL; MSD: interferencia cortisol-ADH produce hipostenuria"
     },
 
     {
@@ -37,7 +37,7 @@
       "conectiva": "AND",
       "consecuente": {"variable": "riesgo", "termino": "muy_alto"},
       "peso": 2.0,
-      "fuente": "Schofield ML 2021: ALT coef LASSO -0.57; Boghian 2020: ALT media 93.26 U/L; Martins 2019: ALT elevada 62.6% casos"
+      "fuente": "Schofield ML 2021: ALT coef LASSO -0.57; Boghian 2020: ALT media 93.26 mg/dL; Martins 2019: ALT elevada 62.6% casos"
     },
 
     {

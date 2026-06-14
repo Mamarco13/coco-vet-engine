@@ -1,53 +1,233 @@
-# C.O.C.O - Motor difuso para prediccion de Cushing canino
+# C.O.C.O. — Motor de Inferencia Difusa para la Prediccion del Sindrome de Cushing Canino
 
-Este repositorio contiene un **motor de inferencia difusa** para estimar el **riesgo/sospecha** de Sindrome de Cushing en perros, junto con su base de conocimiento en JSON. El proyecto esta dividido en:
-
-- **backend/**: motor difuso, base de conocimiento, y ejemplo de ejecucion.
-- **frontend/**: estructura base sin implementacion (pendiente).
-
-> Nota de alcance: este motor **no diagnostica**; produce una **estimacion de riesgo** (0-1) basada en reglas y funciones de pertenencia definidas en la base de conocimiento.
+Trabajo de Fin de Grado de Ingenieria Informatica — Universidad de Granada  
+Autor: Manuel Martinez Cobos
 
 ---
 
-## 1) Como levantar el proyecto (backend)
+## Descripcion general
 
-### 1.1 Requisitos
+C.O.C.O. es un sistema de apoyo a la decision clinica veterinaria basado en logica difusa. Su objetivo es estimar el nivel de riesgo o sospecha de Sindrome de Cushing en perros a partir de variables demograficas, signos clinicos y resultados de laboratorio.
 
-- Python 3.x con `pip` disponible.
-- No hay servidor web en este backend; el ejemplo es un script ejecutable.
+El sistema no emite diagnosticos: produce una estimacion de riesgo continua en el intervalo [0, 1] junto con una etiqueta linguistica y metricas de confianza internas del motor. La interpretacion final corresponde siempre al veterinario responsable.
 
-### 1.2 Instalacion de dependencias
+El proyecto se divide en dos componentes principales:
+
+- **Backend**: motor de inferencia difusa (Mamdani), base de conocimiento en JSON, API REST y servicio de extraccion de datos mediante IA generativa.
+- **Frontend**: interfaz web de analisis y visualizacion de resultados.
+
+---
+
+## Indice
+
+1. [Arquitectura del sistema](#1-arquitectura-del-sistema)
+2. [Estructura del repositorio](#2-estructura-del-repositorio)
+3. [Puesta en marcha](#3-puesta-en-marcha)
+4. [API REST](#4-api-rest)
+5. [Motor de inferencia difusa](#5-motor-de-inferencia-difusa)
+6. [Base de conocimiento JSON](#6-base-de-conocimiento-json)
+7. [Integracion con Gemini](#7-integracion-con-gemini)
+8. [Frontend](#8-frontend)
+9. [Tests](#9-tests)
+10. [Integracion continua y despliegue](#10-integracion-continua-y-despliegue)
+11. [Documentacion tecnica](#11-documentacion-tecnica)
+12. [Como extender el sistema](#12-como-extender-el-sistema)
+13. [Notas operativas](#13-notas-operativas)
+14. [Referencias internas](#14-referencias-internas)
+
+---
+
+## 1) Arquitectura del sistema
+
+```mermaid
+graph TD
+    FE[Frontend Next.js<br>GitHub Pages] -->|HTTP| API[API REST FastAPI<br>Render]
+
+    API --> PC[PrediccionCushing]
+    API --> GS[GeminiService]
+
+    PC --> MD[ModuloDemografico]
+    PC --> MC[ModuloClinico]
+    PC --> ML[ModuloLaboratorio]
+    PC --> KB[Base de conocimiento JSON]
+    PC --> FS[FuzzySystem]
+
+    FS --> OUT[Resultado: crisp + etiqueta + confianza + reglas activas]
+
+    GS -->|PDF / CSV / Excel / Voz| GEMINI[API Gemini 2.5 Flash]
+    GEMINI --> EXTRACTED[Campos clinicos extraidos]
+```
+
+### Capas principales
+
+1. **Frontend (Next.js)**: interfaz web que permite al usuario introducir los datos del paciente manualmente, cargar un documento clinico o dictar los datos por voz. Muestra el resultado de la inferencia con visualizaciones.
+
+2. **API REST (FastAPI)**: expone los endpoints de prediccion y de extraccion de datos. Actua como intermediario entre el frontend y el motor difuso o el servicio de Gemini.
+
+3. **Modulos de entrada**: encapsulan los datos del paciente por dominio (`ModuloDemografico`, `ModuloClinico`, `ModuloLaboratorio`). Son clases simples con getters y setters.
+
+4. **Fachada de prediccion (`PrediccionCushing`)**: carga la base de conocimiento desde JSON, construye variables y reglas difusas, mapea los modulos al diccionario de entradas del motor y ejecuta la inferencia.
+
+5. **Motor difuso (`logicaDifusa/FuzzySystem`)**: implementa el ciclo Mamdani completo: evaluacion de reglas (AND/OR con peso), agregacion (MAX), implicacion (MIN/recorte) y defuzzificacion por centroide. Calcula ademas las metricas de fuerza, consenso y confianza.
+
+6. **Base de conocimiento JSON**: define variables, universos, funciones de pertenencia y reglas en archivos JSON independientes del codigo. Permite modificar la logica clinica sin alterar la implementacion del motor.
+
+7. **Servicio de extraccion con IA (`GeminiService`)**: procesa documentos clinicos (PDF, CSV, Excel) o transcripciones de voz dictadas por el veterinario mediante la API de Gemini 2.5 Flash y devuelve los campos del formulario ya estructurados.
+
+---
+
+## 2) Estructura del repositorio
+
+```
+.
+├── README.md
+├── render.yaml                        # Configuracion de despliegue en Render
+├── Doxyfile                           # Configuracion de Doxygen
+├── .pre-commit-config.yaml
+├── .gitignore
+├── .github/
+│   └── workflows/
+│       ├── deploy.yml                 # CI/CD: tests + build frontend + despliegue
+│       └── tests.yml                  # Ejecucion de tests en cada push/PR
+├── backend/
+│   ├── api.py                         # Aplicacion FastAPI: endpoints REST
+│   ├── gemini_service.py              # Extraccion de datos con Gemini
+│   ├── main.py                        # Punto de entrada CLI (argparse)
+│   ├── requirements.txt
+│   ├── .env                           # Variables de entorno (no versionado)
+│   ├── conocimiento/
+│   │   └── cushing/
+│   │       ├── metadata.json
+│   │       ├── variables/
+│   │       │   ├── demograficas.json
+│   │       │   ├── clinicas.json
+│   │       │   ├── laboratorio.json
+│   │       │   └── consecuente.json
+│   │       └── reglas/
+│   │           ├── riesgo_muy_alto.json
+│   │           ├── riesgo_alto.json
+│   │           ├── riesgo_medio.json
+│   │           ├── riesgo_bajo.json
+│   │           └── riesgo_muy_bajo.json
+│   ├── logicaDifusa/
+│   │   ├── __init__.py
+│   │   ├── defuzzification.py
+│   │   ├── funcionesPertenencia.py
+│   │   ├── reglas.py
+│   │   ├── sistema.py
+│   │   └── variables.py
+│   ├── modulos/
+│   │   ├── __init__.py
+│   │   ├── moduloClinico.py
+│   │   ├── moduloDemografico.py
+│   │   └── moduloLaboratorio.py
+│   ├── sistema/
+│   │   ├── __init__.py
+│   │   ├── prediccion.py
+│   │   └── prediccionCushing.py
+│   └── tests/
+│       ├── test_api.py
+│       ├── test_prediccion_cushing.py
+│       ├── test_reglas.py
+│       ├── test_sistema.py
+│       └── test_variables.py
+├── frontend/
+│   ├── package.json
+│   ├── next.config.ts
+│   ├── tsconfig.json
+│   ├── postcss.config.mjs
+│   ├── eslint.config.mjs
+│   ├── public/
+│   └── src/
+│       ├── app/
+│       │   ├── layout.tsx
+│       │   ├── page.tsx               # Pagina de inicio
+│       │   ├── analyze/               # Pagina de formulario de analisis
+│       │   └── results/               # Pagina de resultados
+│       ├── components/
+│       │   ├── layout/                # Componentes estructurales (cabecera, etc.)
+│       │   └── ui/                    # Componentes reutilizables
+│       │       ├── Button.tsx
+│       │       ├── Card.tsx
+│       │       ├── DiseaseBadge.tsx
+│       │       ├── DocumentUploader.tsx
+│       │       ├── Loader.tsx
+│       │       ├── Modal.tsx
+│       │       ├── ProgressBar.tsx
+│       │       ├── ResultCard.tsx
+│       │       ├── UploadZone.tsx
+│       │       └── VoiceRecorder.tsx
+│       └── lib/
+└── docs/
+    └── doxygen/                       # Documentacion tecnica generada
+```
+
+---
+
+## 3) Puesta en marcha
+
+### 3.1 Requisitos previos
+
+- Python 3.12 con `pip` disponible.
+- Node.js 20 con `npm` disponible.
+- Clave de API de Google Gemini (necesaria para los endpoints de extraccion de datos).
+
+### 3.2 Instalacion del backend
 
 Desde la raiz del repositorio:
 
 ```bash
-python -m venv .venv
+python -m venv venv
 
 # Windows (PowerShell)
-.\.venv\Scripts\Activate.ps1
+.\venv\Scripts\Activate.ps1
 pip install -r backend/requirements.txt
 
-# Linux/WSL
-source .venv/bin/activate
+# Linux / WSL
+source venv/bin/activate
 pip install -r backend/requirements.txt
 ```
 
-### 1.3 Ejecucion del ejemplo
+Crear el archivo `backend/.env` con la clave de API:
 
-El ejemplo completo esta en `backend/main.py` y construye:
+```
+GEMINI_API_KEY=tu_clave_de_api
+```
 
-- modulo demografico (`ModuloDemografico`),
-- modulo clinico (`ModuloClinico`),
-- modulo de laboratorio (`ModuloLaboratorio`),
-- predictor difuso (`PrediccionCushing`).
-
-Ejecuta desde la raiz:
+### 3.3 Arrancar el backend en desarrollo
 
 ```bash
-python backend/main.py
+cd backend
+uvicorn api:app --reload --port 8000
 ```
 
-Actualmente `backend/main.py` usa `argparse`, por lo que espera argumentos obligatorios por CLI. Ejemplo completo:
+La documentacion interactiva estara disponible en `http://localhost:8000/docs`.
+
+### 3.4 Instalacion del frontend
+
+```bash
+cd frontend
+npm install
+```
+
+Crear el archivo `frontend/.env.local` con la URL del backend:
+
+```
+NEXT_PUBLIC_API_BASE=http://localhost:8000
+```
+
+### 3.5 Arrancar el frontend en desarrollo
+
+```bash
+cd frontend
+npm run dev
+```
+
+La interfaz estara disponible en `http://localhost:3000`.
+
+### 3.6 Ejecucion por linea de comandos (CLI)
+
+El modulo `backend/main.py` permite ejecutar el motor directamente sin servidor:
 
 ```bash
 python backend/main.py \
@@ -67,528 +247,467 @@ python backend/main.py \
   --jadeo
 ```
 
-Notas:
+Los flags clinicos son booleanos: su presencia en la llamada implica valor `True`; su ausencia implica `False`.
 
-- Los flags clinicos son booleanos (si se incluyen, se consideran `True`).
-- Si no se incluye un flag clinico, se considera `False`.
+Salida esperada:
 
-Salida esperada (resumen):
+- `Riesgo estimado`: valor continuo en [0, 1].
+- `Nivel de riesgo`: etiqueta linguistica (`muy_bajo`, `bajo`, `medio`, `alto`, `muy_alto`).
+- `Confianza fuzzy`: metrica compuesta interna del motor.
+- Listado de reglas activadas con sus pesos.
+- Informe de explicabilidad.
 
-- `Riesgo estimado` (valor crisp en [0, 1])
-- `Nivel de riesgo` (etiqueta linguistica)
-- `Confianza fuzzy` (metrica compuesta del motor)
-- listado de reglas activadas + pesos
-- informe de explicabilidad
+---
 
-### 1.4 Ejecutar tests
+## 4) API REST
 
-Los tests importan modulos como `sistema`, `logicaDifusa` y `modulos`, por lo que se recomienda ejecutarlos desde `backend/`:
+La API esta implementada con **FastAPI** en `backend/api.py` y se despliega en **Render**.
 
-```bash
-cd backend
-python -m pytest
+### Endpoints disponibles
+
+#### `POST /predict/cushing`
+
+Ejecuta la inferencia difusa con los datos del paciente y devuelve el resultado completo.
+
+**Cuerpo de la solicitud** (`application/json`):
+
+```json
+{
+  "edad": 11.0,
+  "raza": "bichon_frise",
+  "peso": 125.0,
+  "polidipsia": true,
+  "abdomen_inflamado": true,
+  "alopecia": true,
+  "polifagia": true,
+  "poliuria": true,
+  "debilidad": false,
+  "piel_fina": false,
+  "jadeo": true,
+  "alp": 780.0,
+  "alt": 220.0,
+  "usg": 1.012,
+  "colesterol": 410.0
+}
 ```
 
-Si prefieres ejecutarlos desde la raiz, deberas exponer `backend/` en el `PYTHONPATH`.
+**Respuesta**:
 
----
-
-## 2) Estructura actual del repositorio
-
-```
-.
-README.md
-backend/
-  main.py
-  requirements.txt
-  conocimiento/
-    cushing/
-      metadata.json
-      reglas/
-        riesgo_muy_alto.json
-        riesgo_alto.json
-        riesgo_medio.json
-        riesgo_bajo.json
-        riesgo_muy_bajo.json
-      variables/
-        demograficas.json
-        clinicas.json
-        laboratorio.json
-        consecuente.json
-  logicaDifusa/
-    __init__.py
-    defuzzification.py
-    funcionesPertenencia.py
-    reglas.py
-    sistema.py
-    variables.py
-  modulos/
-    __init__.py
-    moduloClinico.py
-    moduloDemografico.py
-    moduloLaboratorio.py
-  sistema/
-    __init__.py
-    prediccion.py
-    prediccionCushing.py
-  tests/
-    test_prediccion_cushing.py
-    test_reglas.py
-    test_sistema.py
-    test_variables.py
-frontend/
-  public/
-  src/
+```json
+{
+  "crisp": 0.94,
+  "label": "muy_alto",
+  "etiqueta": "Muy alto",
+  "confidence": 0.87,
+  "fuerza": 0.91,
+  "consenso": 0.96,
+  "rules": [
+    {
+      "activation": 0.85,
+      "consequent": "muy_alto",
+      "weight": 2.0,
+      "label": "Raza predispuesta + ALP muy elevada + polidipsia + poliuria"
+    }
+  ],
+  "aggregated": [...]
+}
 ```
 
----
+#### `POST /api/extraer-documento`
 
-## 3) Frontend (pendiente)
+Recibe un documento clinico (PDF, CSV o Excel), lo procesa mediante Gemini y devuelve los campos del formulario extraidos.
 
-Este repositorio incluye la carpeta `frontend/`, pero **no hay implementacion aun**. Este apartado queda por completar cuando exista una interfaz funcional.
+**Cuerpo de la solicitud**: `multipart/form-data` con el campo `file`.
 
----
+Tipos MIME aceptados: `application/pdf`, `text/csv`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, `application/vnd.ms-excel`.
 
-## 4) Arquitectura del backend (componentes y responsabilidades)
+**Respuesta**:
 
-```mermaid
-graph TD
-  D[ModuloDemografico] --> P[PrediccionCushing]
-  C[ModuloClinico] --> P
-  L[ModuloLaboratorio] --> P
-
-  KB[Base de conocimiento JSON] --> P
-
-  P --> FS[FuzzySystem]
-  FS --> OUT[Resultado: crisp + etiqueta + confianza + reglas activas]
+```json
+{
+  "ok": true,
+  "data": { "edad": 8.0, "alp": 450.0, "polidipsia": true, ... },
+  "missing_fields": ["usg", "colesterol"],
+  "extracted_count": 9,
+  "total_fields": 15
+}
 ```
 
-### Capas principales
+#### `POST /api/extraer-voz`
 
-1. **Entrada (modulos)**
-   - Encapsulan datos de paciente por dominios.
-   - Clases simples con getters/setters.
+Recibe la transcripcion textual de un dictado de voz del veterinario y extrae los campos clinicos mediante Gemini.
 
-2. **Fachada de prediccion (`PrediccionCushing`)**
-   - Carga la base JSON desde `backend/conocimiento/cushing/`.
-   - Construye variables fuzzy (antecedentes y consecuentes).
-  - Construye reglas fuzzy (antecedentes -> consecuente).
-   - Mapea modulos → diccionario `inputs` para el motor.
-   - Ejecuta inferencia y devuelve resultados.
+**Cuerpo de la solicitud** (`application/json`):
 
-3. **Motor difuso (`logicaDifusa/FuzzySystem`)**
-   - Evalua reglas (activacion + peso).
-   - Agrega salidas (Mamdani: MIN implicacion, MAX agregacion).
-   - Defuzzifica (centroide) y calcula una confianza compuesta.
+```json
+{
+  "transcript": "Paciente de ocho anos, raza golden retriever, bebe mucho agua, ALP en 450..."
+}
+```
 
-4. **Base de conocimiento JSON**
-   - Define variables, universos, terminos y reglas.
-   - Mantiene la logica clinica fuera del codigo.
+La respuesta tiene la misma estructura que `/api/extraer-documento`.
 
----
+### CORS
 
-## 5) Contratos de entrada (inputs)
+La API permite solicitudes desde los siguientes origenes:
 
-El predictor construye un diccionario `inputs` con **nombres de variables exactamente iguales** a los declarados en `backend/conocimiento/cushing/variables/*.json`.
-
-### 5.1 Modulo demografico — `backend/modulos/moduloDemografico.py`
-
-Campos:
-
-- `edad` (anios, numerica)
-- `peso_rel` (porcentaje respecto a la media raza-sexo, numerica)
-- `raza` (categorica, string)
-
-En `PrediccionCushing.predecir()` se transforman a:
-
-- `edad` -> numero
-- `peso_relativo` -> numero (nota: el atributo en el modulo se llama `peso_rel`)
-- `raza` -> string (normalizada internamente por la MF categorica)
-
-### 5.2 Modulo clinico — `backend/modulos/moduloClinico.py`
-
-Campos (booleanos):
-
-- `polidipsia`, `poliuria`, `polifagia`
-- `abdomen_inflamado` (mapeado a variable fuzzy `abdomen`)
-- `alopecia`
-- `debilidad_muscular`
-- `piel_fina`
-- `jadeo`
-
-Transformacion a fuzzy:
-
-- `True` -> `1.0`
-- `False` o `None` -> `0.0`
-
-### 5.3 Modulo de laboratorio — `backend/modulos/moduloLaboratorio.py`
-
-Campos:
-
-- `alp` (U/L)
-- `alt` (U/L)
-- `usg` (densidad urinaria)
-- `colesterol` (mg/dL)
-
-Se pasan como valores numericos directamente.
-
-### 5.4 Clipping de entradas fuera de rango
-
-Antes de inferir, el predictor recorta valores numericos fuera del universo declarado y emite un `warnings.warn`:
-
-- si `valor < u_min` -> se recorta a `u_min`
-- si `valor > u_max` -> se recorta a `u_max`
-
-Las variables categoricas (string) se omiten en esta validacion.
+- `http://localhost:3000`
+- `http://127.0.0.1:3000`
+- `https://mamarco13.github.io`
 
 ---
 
-## 6) Salida del sistema (outputs)
+## 5) Motor de inferencia difusa
 
-`PrediccionCushing.predecir()` devuelve el resultado de `FuzzySystem.infer(...)` con esta estructura:
+### 5.1 Entradas (inputs)
 
-- `crisp` (`float`): valor defuzzificado del output `riesgo`.
-- `label` (`str`): etiqueta interna del termino ganador (ej. `muy_alto`).
-- `etiqueta` (`str`): etiqueta humanizada (ej. `Muy alto`).
-- `confidence` (`float`): confianza compuesta (ver seccion 8).
-- `fuerza` (`float`): fuerza agregada de activaciones.
-- `consenso` (`float`): grado de acuerdo entre reglas activas.
-- `rules` (`list[RuleResult]`): reglas activas con `activation`, `consequent`, `rule.weight`.
-- `aggregated` (`np.ndarray`): membership agregada del output.
+El predictor construye un diccionario `inputs` con los nombres de variable exactamente tal como estan declarados en `backend/conocimiento/cushing/variables/*.json`.
 
-Interpretacion recomendada:
+**Modulo demografico** (`backend/modulos/moduloDemografico.py`):
 
-- `crisp` aproxima un **grado continuo de sospecha** en [0, 1].
-- `confidence` **no es una probabilidad clinica**; es una metrica interna del motor.
+| Campo en modulo | Variable fuzzy | Tipo |
+|---|---|---|
+| `edad` | `edad` | Numerica (anos) |
+| `peso_rel` | `peso_relativo` | Numerica (% respecto a media raza-sexo) |
+| `raza` | `raza` | Categorica (string normalizado) |
+
+**Modulo clinico** (`backend/modulos/moduloClinico.py`):
+
+Todos los campos son booleanos. Se transforman a fuzzy como `True` -> `1.0` y `False`/`None` -> `0.0`.
+
+| Campo en modulo | Variable fuzzy |
+|---|---|
+| `polidipsia` | `polidipsia` |
+| `poliuria` | `poliuria` |
+| `polifagia` | `polifagia` |
+| `abdomen_inflamado` | `abdomen` |
+| `alopecia` | `alopecia` |
+| `debilidad_muscular` | `debilidad_muscular` |
+| `piel_fina` | `piel_fina` |
+| `jadeo` | `jadeo` |
+
+**Modulo de laboratorio** (`backend/modulos/moduloLaboratorio.py`):
+
+| Campo | Variable fuzzy | Unidad |
+|---|---|---|
+| `alp` | `alp` | mg/dL |
+| `alt` | `alt` | mg/dL |
+| `usg` | `usg` | — |
+| `colesterol` | `colesterol` | mg/dL |
+
+**Clipping de valores fuera de rango**: antes de la inferencia, los valores numericos que excedan el universo declarado se recortan al limite correspondiente y se emite un `warnings.warn`.
+
+### 5.2 Evaluacion de reglas
+
+Para cada antecedente $i$ de una regla se calcula el grado de pertenencia:
+
+$$\mu_i = MF_i(x_i)$$
+
+Los antecedentes se combinan segun la conectiva de la regla:
+
+- `AND` -> $\min(\mu_1, \mu_2, \ldots, \mu_n)$
+- `OR` -> $\max(\mu_1, \mu_2, \ldots, \mu_n)$
+
+La activacion final con peso es:
+
+$$\alpha = combine(\mu) \cdot weight$$
+
+Una regla se considera activa si $\alpha > 0$.
+
+### 5.3 Agregacion Mamdani
+
+Para cada regla activa se aplica implicacion MIN (recorte):
+
+$$\mu_{recortada}(u) = \min(\alpha,\ \mu_{consecuente}(u))$$
+
+Agregacion por MAX (union):
+
+$$\mu_{agg}(u) = \max_{reglas}(\mu_{recortada}(u))$$
+
+### 5.4 Defuzzificacion
+
+El motor usa el metodo del centroide:
+
+$$crisp = \frac{\int u\,\mu_{agg}(u)\,du}{\int \mu_{agg}(u)\,du}$$
+
+### 5.5 Metricas de confianza
+
+- **Fuerza** — media autoponderada de activaciones:
+
+$$fuerza = \frac{\sum (\alpha^2 \cdot w)}{\sum (\alpha \cdot w)}$$
+
+- **Consenso** — fraccion de activacion ponderada que apunta al termino dominante:
+
+$$consenso = \frac{\max\left(\sum \alpha \cdot w \text{ por termino}\right)}{\sum (\alpha \cdot w)}$$
+
+- **Confianza final**:
+
+$$confidence = fuerza \cdot consenso$$
+
+### 5.6 Salida (`PrediccionCushing.predecir()`)
+
+| Campo | Tipo | Descripcion |
+|---|---|---|
+| `crisp` | `float` | Valor defuzzificado en [0, 1] |
+| `label` | `str` | Etiqueta interna del termino ganador (ej. `muy_alto`) |
+| `etiqueta` | `str` | Etiqueta humanizada (ej. `Muy alto`) |
+| `confidence` | `float` | Confianza compuesta |
+| `fuerza` | `float` | Fuerza agregada de activaciones |
+| `consenso` | `float` | Grado de acuerdo entre reglas activas |
+| `rules` | `list[RuleResult]` | Reglas activas con activacion, consecuente y peso |
+| `aggregated` | `np.ndarray` | Membership agregada del output |
 
 ---
 
-## 7) Base de conocimiento JSON (formato y convenciones)
+## 6) Base de conocimiento JSON
 
-La base se carga desde:
+La base de conocimiento se carga desde:
 
 - `backend/conocimiento/cushing/metadata.json`
 - `backend/conocimiento/cushing/variables/*.json`
 - `backend/conocimiento/cushing/reglas/*.json`
 
-### 7.1 Metadata
-
-Archivo: `backend/conocimiento/cushing/metadata.json`
-
-Estructura actual:
+### 6.1 Metadata
 
 ```json
 {
   "metadata": {
     "version": "1.0",
     "fecha": "16/05/2026",
-    "autor": "Manuel Martínez Cobos",
-    "descripcion": "Base de conocimiento difusa para predicción de Cushing canino"
+    "autor": "Manuel Martinez Cobos",
+    "descripcion": "Base de conocimiento difusa para prediccion de Cushing canino"
   }
 }
 ```
 
-El cargador tambien acepta el caso en que los campos esten al nivel raiz (sin el nodo `metadata`). Los campos obligatorios que valida el motor son: `autor`, `version`, `descripcion`.
+Campos obligatorios validados por el motor: `autor`, `version`, `descripcion`.
 
-### 7.2 Variables
+### 6.2 Variables
 
-Los JSON de variables se fusionan en dos grupos:
+Los archivos de variables se clasifican automaticamente:
 
-- **Antecedentes**: cualquier archivo en `variables/` cuyo nombre **no** contenga la palabra `consecuente`.
-- **Consecuentes**: archivos cuyo nombre **si** contiene `consecuente`.
+- **Antecedentes**: archivos cuyo nombre no contiene la palabra `consecuente`.
+- **Consecuentes**: archivos cuyo nombre contiene `consecuente`.
 
-Cada variable se define como:
+Esquema de una variable:
 
 ```json
 {
   "nombre_variable": {
-    "tipo": "numerica|binaria|categorica",
+    "tipo": "numerica | binaria | categorica",
     "universo": [inicio, fin, paso],
     "unidad": "...",
     "fuente": "...",
     "terminos": {
-      "etiqueta": {"funcion": "trimf|zmf|smf", "params": [...]}
+      "etiqueta": { "funcion": "trimf | zmf | smf", "params": [...] }
     }
   }
 }
 ```
 
-Notas importantes del motor (`PrediccionCushing._crear_variable_fuzzy`):
+Para variables de `tipo == "categorica"` (actualmente solo `raza`), el campo `universo` no se utiliza; cada termino contiene una lista de cadenas aceptadas. La pertenencia es crisp: 1.0 si la raza pertenece a la lista, 0.0 en caso contrario. El motor normaliza la entrada aplicando `strip()`, `lower()` y sustitucion de espacios y guiones por `_`.
 
-- Si `tipo` **falta**, se asume `numerica`.
-- Solo existe tratamiento especial para `tipo == "categorica"`.
-  - En categoricas no se usa `universo`; internamente se crea un universo dummy `[0.0, 1.0]`.
-  - Cada termino se define como lista de strings aceptadas.
-- `binaria` se trata como variable numerica (mismo flujo que `numerica`).
+### 6.3 Variables definidas para Cushing
 
-#### Variables categoricas (detalle)
+**Demograficas** (`variables/demograficas.json`):
 
-En Cushing hay una variable categorica: `raza`.
+- `edad` (0-20 anos, paso 0.1): terminos `joven` (zmf), `adulto` (trimf), `mayor` (smf).
+- `peso_relativo` (50-150 %, paso 1): terminos `bajo` (zmf), `normal` (trimf), `alto` (smf).
+- `raza` (categorica): terminos `protectora`, `neutra`, `predispuesta_moderada`, `predispuesta_alta`.
 
-- Cada termino contiene una lista de razas aceptadas.
-- La pertenencia es crisp:
-  - si la raza esta en la lista → membership = 1.0
-  - si no esta → membership = 0.0
+**Clinicas** (`variables/clinicas.json`):
 
-Normalizacion aplicada por el motor antes de comparar:
+Variables: `polidipsia`, `poliuria`, `abdomen`, `alopecia`, `debilidad_muscular`, `piel_fina`, `polifagia`, `jadeo`. Todas comparten universo 0-1 (paso 0.01) y terminos `no` (trimf) y `si` (trimf).
 
-- `strip()`
-- `lower()`
-- espacios y guiones → `_`
+**Laboratorio** (`variables/laboratorio.json`):
 
-Ejemplos:
+- `alp` (0-3000 mg/dL): terminos `normal`, `elevada`, `muy_elevada`.
+- `alt` (0-1500 mg/dL): terminos `normal`, `elevada`, `muy_elevada`.
+- `usg` (1.000-1.060): terminos `diluida`, `intermedia`, `concentrada`.
+- `colesterol` (50-600 mg/dL): terminos `normal`, `elevado`, `muy_elevado`.
 
-- `"Bichon Frise"` → `"bichon_frise"`
-- `"miniature-schnauzer"` → `"miniature_schnauzer"`
+**Consecuente** (`variables/consecuente.json`):
 
-### 7.3 Reglas
+- `riesgo` (0-1, paso 0.01): terminos `muy_bajo`, `bajo`, `medio`, `alto`, `muy_alto`.
 
-Cada archivo en `backend/conocimiento/cushing/reglas/*.json` contiene una lista de reglas. Estructura:
+### 6.4 Reglas
+
+Esquema de una regla:
 
 ```json
-[
-  {
-    "label": "...",
-    "antecedentes": [
-      {"variable": "edad", "termino": "mayor"},
-      {"variable": "alp", "termino": "elevada"}
-    ],
-    "conectiva": "AND",
-    "consecuente": {"variable": "riesgo", "termino": "alto"},
-    "peso": 1.0,
-    "fuente": "..."
-  }
-]
+{
+  "label": "Descripcion breve de la regla",
+  "antecedentes": [
+    { "variable": "edad", "termino": "mayor" },
+    { "variable": "alp", "termino": "elevada" }
+  ],
+  "conectiva": "AND",
+  "consecuente": { "variable": "riesgo", "termino": "alto" },
+  "peso": 1.0,
+  "fuente": "Referencia bibliografica o justificacion clinica"
+}
 ```
 
-Compatibilidad:
+Distribucion actual de reglas:
 
-- El motor usa `conectiva` como operador logico.
-- Si `conectiva` no esta, intenta `tipo` y por defecto asume `AND`.
-
----
-
-## 8) Algoritmo de inferencia (como se calcula el riesgo)
-
-### 8.1 Evaluacion de reglas
-
-Cada regla tiene:
-
-- antecedentes: lista de pares `(variable, MF_del_termino)`
-- operador: `AND` / `OR`
-- peso: `weight`
-
-Para cada antecedente $i$ se calcula el grado de pertenencia:
-
-$$\mu_i = MF_i(x_i)$$
-
-Combinacion:
-
-- AND -> $\min(\mu_1, \mu_2, ..., \mu_n)$
-- OR -> $\max(\mu_1, \mu_2, ..., \mu_n)$
-
-Activacion final (con peso):
-
-$$\alpha = combine(\mu) \cdot weight$$
-
-Una regla se considera **activa** si $\alpha > 0$.
-
-### 8.2 Agregacion Mamdani
-
-Para el consecuente (output) se usa:
-
-- implicacion: **MIN** (recorte)
-- agregacion: **MAX** (union)
-
-Para cada regla activa:
-
-$$\mu_{recortada}(u) = \min(\alpha, \mu_{consecuente}(u))$$
-
-Agregacion total:
-
-$$\mu_{agg}(u) = \max_{reglas}(\mu_{recortada}(u))$$
-
-### 8.3 Defuzzificacion
-
-El motor usa **centroide** (`CentroidDefuzzifier`):
-
-$$crisp = \frac{\int u\,\mu_{agg}(u)\,du}{\int \mu_{agg}(u)\,du}$$
-
-### 8.4 Confianza compuesta
-
-El motor calcula tres magnitudes:
-
-- **Fuerza**: media autoponderada de activaciones.
-  $$fuerza = \frac{\sum (\alpha^2 \cdot w)}{\sum (\alpha \cdot w)}$$
-
-- **Consenso**: fraccion de activacion ponderada que apunta al termino dominante.
-  $$consenso = \frac{\max(\sum \alpha \cdot w \; por\ termino)}{\sum (\alpha \cdot w)}$$
-
-- **Confianza final**:
-  $$confidence = fuerza \cdot consenso$$
+| Archivo | Numero de reglas |
+|---|---|
+| `riesgo_muy_bajo.json` | 3 |
+| `riesgo_bajo.json` | 4 |
+| `riesgo_medio.json` | 6 |
+| `riesgo_alto.json` | 10 |
+| `riesgo_muy_alto.json` | 4 |
+| **Total** | **27** |
 
 ---
 
-## 9) Variables definidas para Cushing (detalle actual)
+## 7) Integracion con Gemini
 
-### 9.1 Demograficas (`backend/conocimiento/cushing/variables/demograficas.json`)
+El modulo `backend/gemini_service.py` implementa la extraccion automatica de datos clinicos utilizando la API de **Gemini 2.5 Flash** con salida estructurada (JSON schema).
 
-- `edad` (0-20 anios, paso 0.1)
-  - `joven`: `zmf(0, 4)`
-  - `adulto`: `trimf(3, 6.5, 10)`
-  - `mayor`: `smf(8, 12)`
+Soporta dos modos de entrada:
 
-- `peso_relativo` (50-150 %, paso 1)
-  - `bajo`: `zmf(50, 85)`
-  - `normal`: `trimf(80, 100, 120)`
-  - `alto`: `smf(115, 140)`
+- **Documento** (`extract_document_data`): acepta el contenido binario de un archivo PDF, CSV o Excel junto con su tipo MIME. El archivo se envía como parte inline al modelo.
+- **Voz** (`extract_voice_data`): acepta la transcripcion textual de un dictado del veterinario. El prompt incluye una guia de interpretacion de lenguaje coloquial.
 
-- `raza` (categorica)
-  - `protectora`: `golden_retriever`, `labrador_retriever`, `border_collie`, `cocker_spaniel`
-  - `neutra`: `mestizo`, `beagle`, `rottweiler`, `boxer`, `west_highland_white_terrier`, `cavalier_king_charles_spaniel`, `cockapoo`, `shih_tzu`, `pomeranian`, `english_springer_spaniel`, `pug`, `chihuahua`, `german_shepherd_dog`, `other_purebred`
-  - `predispuesta_moderada`: `staffordshire_bull_terrier`, `jack_russell_terrier`, `lhasa_apso`, `yorkshire_terrier`, `poodle`, `dachshund`
-  - `predispuesta_alta`: `bichon_frise`, `border_terrier`, `miniature_schnauzer`
+En ambos casos, el modelo devuelve un JSON que sigue el esquema de `ExtractedDocument` (modelo Pydantic), con un campo por cada dato del formulario. Los campos no encontrados en el documento se retornan como `null`.
 
-> En el JSON existe `pesos_numericos` para estos terminos, pero **el motor actual no los usa**.
+La funcion `get_missing_fields` identifica los campos con valor `null` para que el frontend pueda indicar al usuario que datos deben introducirse manualmente.
 
-### 9.2 Clinicas (`backend/conocimiento/cushing/variables/clinicas.json`)
-
-Todas las clinicas comparten:
-
-- universo: 0-1 (paso 0.01)
-- terminos:
-  - `no`: `trimf(0, 0, 0.4)`
-  - `si`: `trimf(0.6, 1, 1)`
-
-Variables:
-
-- `polidipsia`
-- `poliuria`
-- `abdomen`
-- `alopecia`
-- `debilidad_muscular`
-- `piel_fina`
-- `polifagia`
-- `jadeo`
-
-### 9.3 Laboratorio (`backend/conocimiento/cushing/variables/laboratorio.json`)
-
-- `alp` (0-3000 U/L, paso 10)
-  - `normal`: `zmf(0, 150)`
-  - `elevada`: `trimf(100, 400, 800)`
-  - `muy_elevada`: `smf(700, 1500)`
-
-- `usg` (1.000-1.060, paso 0.001)
-  - `diluida`: `zmf(1.000, 1.015)`
-  - `intermedia`: `trimf(1.010, 1.020, 1.030)`
-  - `concentrada`: `smf(1.025, 1.045)`
-
-- `alt` (0-1500 U/L, paso 5)
-  - `normal`: `zmf(0, 80)`
-  - `elevada`: `trimf(60, 150, 350)`
-  - `muy_elevada`: `smf(300, 700)`
-
-- `colesterol` (50-600 mg/dL, paso 5)
-  - `normal`: `zmf(50, 220)`
-  - `elevado`: `trimf(180, 300, 450)`
-  - `muy_elevado`: `smf(400, 550)`
-
-### 9.4 Variable de salida (`backend/conocimiento/cushing/variables/consecuente.json`)
-
-- `riesgo` (0-1, paso 0.01)
-  - `muy_bajo`: `zmf(0, 0.06)`
-  - `bajo`: `trimf(0.02, 0.12, 0.24)`
-  - `medio`: `trimf(0.28, 0.50, 0.72)`
-  - `alto`: `trimf(0.76, 0.87, 0.94)`
-  - `muy_alto`: `smf(0.96, 1.0)`
+La clave de API se configura mediante la variable de entorno `GEMINI_API_KEY` en el archivo `backend/.env`. Esta clave nunca debe incluirse en el repositorio.
 
 ---
 
-## 10) Reglas de Cushing (que hay implementado)
+## 8) Frontend
 
-Las reglas estan separadas por nivel de riesgo:
+El frontend esta implementado con **Next.js 16**, **React 19**, **TypeScript** y **Tailwind CSS 4**. Se despliega como exportacion estatica en **GitHub Pages**.
 
-- `riesgo_muy_bajo.json` (3 reglas)
-- `riesgo_bajo.json` (4 reglas)
-- `riesgo_medio.json` (6 reglas)
-- `riesgo_alto.json` (10 reglas)
-- `riesgo_muy_alto.json` (4 reglas)
+### Paginas principales
 
-Total actual: **27 reglas**.
+- `/` — Pagina de inicio: descripcion del proyecto, metodologia y acceso al formulario.
+- `/analyze` — Formulario de analisis: introduccion de datos del paciente mediante formulario manual, carga de documento clinico o dictado por voz.
+- `/results` — Pagina de resultados: visualizacion del nivel de riesgo, confianza, reglas activadas y recomendaciones.
 
-Cada regla incluye:
+### Componentes destacados
 
-- `label`: descripcion breve
-- `antecedentes`: lista de (variable, termino)
-- `conectiva`: `AND` / `OR`
-- `consecuente`: `(riesgo, <nivel>)`
-- `peso`: ponderacion (1.0 tipico; 2.0 en reglas muy fuertes)
-- `fuente`: trazabilidad bibliografica/justificacion
+- `DocumentUploader`: gestion de carga y procesamiento de documentos clinicos con integracion al endpoint `/api/extraer-documento`.
+- `VoiceRecorder`: grabacion y transcripcion de voz del veterinario con integracion al endpoint `/api/extraer-voz`.
+- `ResultCard`: tarjeta de visualizacion del resultado de la inferencia.
+- `ProgressBar`: indicador visual del nivel de riesgo estimado.
 
----
+### Variables de entorno del frontend
 
-## 11) Explicabilidad
-
-Hay dos niveles de explicabilidad:
-
-1. **Retorno estructurado** (`results["rules"]`)
-   - Lista de `RuleResult` con activacion, consecuente y peso.
-
-2. **Informe por consola** (`PrediccionCushing.explicar_decision()`)
-   - Imprime las reglas activadas con su activacion y peso.
+| Variable | Descripcion |
+|---|---|
+| `NEXT_PUBLIC_API_BASE` | URL base del backend (ej. `https://coco-backend.onrender.com`) |
 
 ---
 
-## 12) Como extender o adaptar el motor
+## 9) Tests
+
+Los tests estan implementados con **pytest** y cubren los siguientes modulos:
+
+| Archivo | Modulo bajo prueba |
+|---|---|
+| `test_variables.py` | Variables fuzzy y funciones de pertenencia |
+| `test_reglas.py` | Evaluacion de reglas difusas |
+| `test_sistema.py` | Motor de inferencia (`FuzzySystem`) |
+| `test_prediccion_cushing.py` | Fachada de prediccion (`PrediccionCushing`) |
+| `test_api.py` | Endpoints de la API REST |
+
+Ejecucion desde el directorio `backend/`:
+
+```bash
+cd backend
+python -m pytest tests/ -v
+```
+
+---
+
+## 10) Integracion continua y despliegue
+
+El repositorio dispone de dos flujos de GitHub Actions:
+
+### `tests.yml`
+
+Se ejecuta en cada push y pull request sobre la rama `main`. Instala las dependencias del backend y ejecuta la suite de tests con pytest.
+
+### `deploy.yml`
+
+Se ejecuta en cada push sobre la rama `main` (y en pull requests para la fase de tests). Consta de cuatro trabajos:
+
+1. **Tests backend**: ejecuta pytest sobre el backend.
+2. **Build frontend**: construye el frontend como exportacion estatica para GitHub Pages. Requiere el secreto `NEXT_PUBLIC_API_BASE`.
+3. **Deploy frontend**: despliega el artefacto generado en GitHub Pages.
+4. **Redeploy backend**: lanza el webhook de redespliegue en Render. Requiere el secreto `RENDER_DEPLOY_HOOK_URL`.
+
+### Despliegue de produccion
+
+| Componente | Plataforma | URL |
+|---|---|---|
+| Backend | Render (plan free, region Frankfurt) | — |
+| Frontend | GitHub Pages | `https://mamarco13.github.io` |
+
+La variable `GEMINI_API_KEY` se configura manualmente en el panel de Render y nunca se incluye en el repositorio ni en `render.yaml`.
+
+---
+
+## 11) Documentacion tecnica
+
+La documentacion tecnica del codigo se genera con **Doxygen** a partir del archivo `Doxyfile` en la raiz del repositorio. Los archivos generados se depositan en `docs/doxygen/`.
+
+Para regenerar la documentacion:
+
+```bash
+doxygen Doxyfile
+```
+
+---
+
+## 12) Como extender el sistema
 
 ### 12.1 Anadir una nueva variable fuzzy
 
-1. Declara la variable en un JSON dentro de `backend/conocimiento/cushing/variables/`.
-2. Asegurate de que el nombre coincide con la clave que usaran las reglas.
-3. Actualiza `PrediccionCushing.predecir()` para incluir el valor en `inputs`.
+1. Declarar la variable en un archivo JSON dentro de `backend/conocimiento/cushing/variables/`.
+2. Asegurarse de que el nombre de la clave coincide con el que usaran las reglas.
+3. Actualizar `PrediccionCushing.predecir()` para incluir el nuevo valor en el diccionario `inputs`.
 
-Si una regla usa una variable que no esta en `inputs`, la evaluacion fallara con:
-
-- `ValueError: Falta input para '<variable>'`
+Si una regla referencia una variable que no esta en `inputs`, la evaluacion fallara con `ValueError: Falta input para '<variable>'`.
 
 ### 12.2 Anadir reglas
 
-1. Crea o edita un JSON en `backend/conocimiento/cushing/reglas/`.
-2. Usa terminos que existan en la variable.
-3. Ajusta `peso` si quieres priorizar o despriorizar esa regla.
+1. Crear o editar un archivo JSON en `backend/conocimiento/cushing/reglas/`.
+2. Usar unicamente terminos ya declarados en las variables correspondientes.
+3. Ajustar el campo `peso` para priorizar o reducir la influencia de la regla.
 
 ### 12.3 Crear un predictor para otra patologia
 
 Patron recomendado:
 
-- Crear `backend/conocimiento/<patologia>/` con `metadata.json`, `variables/`, `reglas/`.
-- Crear `backend/sistema/prediccion<Patologia>.py` copiando la estructura de `PrediccionCushing`.
-- Implementar el mapeo de entradas (`inputs`) desde modulos o desde un DTO.
+1. Crear la carpeta `backend/conocimiento/<patologia>/` con `metadata.json`, `variables/` y `reglas/`.
+2. Crear `backend/sistema/prediccion<Patologia>.py` siguiendo la estructura de `PrediccionCushing`.
+3. Implementar el mapeo de entradas desde los modulos o desde un DTO especifico.
+4. Exponer el nuevo predictor a traves de un endpoint en `backend/api.py`.
 
 ---
 
-## 13) Notas operativas (errores comunes)
+## 13) Notas operativas
 
-- Si `raza` no coincide con las cadenas esperadas (normalizadas), su pertenencia sera 0.0 y las reglas que dependan de raza pueden no activarse.
-- Si **ninguna regla activa**, `FuzzySystem.infer()` lanza `ValueError("No hay reglas activas")`.
-- Si un valor numerico cae fuera del universo definido, se aplica clipping y se emite un warning.
+- Si la cadena de raza no coincide con ninguna de las definidas en la base de conocimiento (tras normalizacion), su pertenencia sera 0.0 y las reglas que dependan de esa variable podrian no activarse.
+- Si ninguna regla resulta activa tras la evaluacion, `FuzzySystem.infer()` lanza `ValueError("No hay reglas activas")`.
+- Los valores numericos fuera del universo declarado se recortan automaticamente al limite del universo y generan un `warnings.warn`.
+- El backend requiere la variable de entorno `GEMINI_API_KEY` para los endpoints de extraccion de datos. Si no esta configurada, estos endpoints devuelven HTTP 503.
 
 ---
 
-## 14) Referencias internas (codigo clave)
+## 14) Referencias internas
 
-- `backend/sistema/prediccionCushing.py`
-  - carga y fusion de base JSON
-  - creacion de variables fuzzy (incluye categoricas)
-  - construccion de reglas
-  - ejecucion de inferencia + explicabilidad
-
-- `backend/logicaDifusa/sistema.py`
-  - Mamdani + defuzzificacion centroide
-  - calculo de `fuerza`, `consenso` y `confidence`
-
-- `backend/logicaDifusa/reglas.py`
-  - evaluacion de reglas (AND/OR, peso)
-
-- `backend/conocimiento/cushing/*`
-  - verdad del modelo (variables + reglas)
+| Archivo | Contenido |
+|---|---|
+| `backend/sistema/prediccionCushing.py` | Carga de la base de conocimiento, creacion de variables y reglas difusas, ejecucion de la inferencia y explicabilidad |
+| `backend/logicaDifusa/sistema.py` | Motor Mamdani, defuzzificacion por centroide, calculo de fuerza, consenso y confianza |
+| `backend/logicaDifusa/reglas.py` | Evaluacion de reglas (AND/OR, peso) |
+| `backend/logicaDifusa/funcionesPertenencia.py` | Implementacion de funciones de pertenencia (trimf, zmf, smf, categorica) |
+| `backend/gemini_service.py` | Extraccion de datos clinicos desde documentos y voz mediante Gemini |
+| `backend/api.py` | Definicion de endpoints REST y serializacion de resultados |
+| `backend/conocimiento/cushing/` | Fuente de verdad del modelo: variables y reglas |

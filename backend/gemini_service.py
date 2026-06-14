@@ -41,10 +41,10 @@ class ExtractedDocument(BaseModel):
 
     # Laboratorio
     alp: float | None = Field(
-        description="Fosfatasa Alcalina (ALP/FA) en U/L. Null si no aparece."
+        description="Fosfatasa Alcalina (ALP/FA) en mg/dL. Null si no aparece."
     )
     alt: float | None = Field(
-        description="Alanina Aminotransferasa (ALT/GPT) en U/L. Null si no aparece."
+        description="Alanina Aminotransferasa (ALT/GPT) en mg/dL. Null si no aparece."
     )
     usg: float | None = Field(
         description="Gravedad Específica de la Orina (USG/densidad orina). Null si no aparece."
@@ -170,8 +170,8 @@ GUÍA DE INTERPRETACIÓN CLÍNICA (expresiones coloquiales → campo):
      como "pesa un 20% más" o "peso relativo 120%")
 
   Laboratorio (valores numéricos con sus unidades):
-  - "ALP X" / "fosfatasa alcalina X" / "FA X"                         → alp (U/L)
-  - "ALT X" / "GPT X" / "transaminasa X"                              → alt (U/L)
+  - "ALP X" / "fosfatasa alcalina X" / "FA X"                         → alp (mg/dL)
+  - "ALT X" / "GPT X" / "transaminasa X"                              → alt (mg/dL)
   - "densidad de orina X" / "USG X" / "gravedad específica X"         → usg
   - "colesterol X" / "col X mg/dL"                                    → colesterol
 

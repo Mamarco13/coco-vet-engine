@@ -369,7 +369,7 @@ export default function AnalyzePage() {
               </p>
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <label className={labelCls}>ALP — Fosfatasa Alcalina (U/L) *</label>
+                  <label className={labelCls}>ALP — Fosfatasa Alcalina (mg/dL) *</label>
                   <input
                     type="number"
                     min="0"
@@ -381,7 +381,7 @@ export default function AnalyzePage() {
                   />
                 </div>
                 <div>
-                  <label className={labelCls}>ALT — Alanina Aminotransferasa (U/L) *</label>
+                  <label className={labelCls}>ALT — Alanina Aminotransferasa (mg/dL) *</label>
                   <input
                     type="number"
                     min="0"

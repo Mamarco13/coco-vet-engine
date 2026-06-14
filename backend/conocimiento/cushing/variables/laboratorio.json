@@ -2,8 +2,8 @@
     "alp": {
         "tipo": "numerica",
         "universo": [0, 3000, 10],
-        "unidad": "U/L",
-        "fuente": "Boghian 2020: normal 10.6-100.7 U/L, media Cushing 378 U/L; MSD: isoenzima C-ALP inducida por cortisol exclusiva de perros",
+        "unidad": "mg/dL",
+        "fuente": "Boghian 2020: normal 10.6-100.7 mg/dL, media Cushing 378 mg/dL; MSD: isoenzima C-ALP inducida por cortisol exclusiva de perros",
         "terminos": {
           "normal":      {"funcion": "zmf",   "params": [0, 150]},
           "elevada":     {"funcion": "trimf", "params": [100, 400, 800]},
@@ -26,8 +26,8 @@
       "alt": {
         "tipo": "numerica",
         "universo": [0, 1500, 5],
-        "unidad": "U/L",
-        "fuente": "Boghian 2020: normal 8.2-57.3 U/L, media Cushing 93.26 U/L; Schofield ML 2021: coeficiente LASSO -0.57 (segundo predictor mas fuerte)",
+        "unidad": "mg/dL",
+        "fuente": "Boghian 2020: normal 8.2-57.3 mg/dL, media Cushing 93.26 mg/dL; Schofield ML 2021: coeficiente LASSO -0.57 (segundo predictor mas fuerte)",
         "terminos": {
           "normal":      {"funcion": "zmf",   "params": [0, 80]},
           "elevada":     {"funcion": "trimf", "params": [60, 150, 350]},

@@ -46,7 +46,7 @@
       "conectiva": "AND",
       "consecuente": {"variable": "riesgo", "termino": "alto"},
       "peso": 1.0,
-      "fuente": "Boghian 2020: ALP 378 U/L y ALT 93.26 U/L medias en Cushing; MSD: vacuolacion hepatica por glucogeno eleva ambas"
+      "fuente": "Boghian 2020: ALP 378 mg/dL y ALT 93.26 mg/dL medias en Cushing; MSD: vacuolacion hepatica por glucogeno eleva ambas"
     },
 
     {
